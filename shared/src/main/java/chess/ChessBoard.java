@@ -8,12 +8,12 @@ package chess;
  */
 public class ChessBoard {
 
-    private final ChessPosition[][] boardSpots = new ChessPosition[10][10];
-    private ChessPiece[][] piecesOnBoard = new ChessPiece[10][10];
+    private final ChessPosition[][] boardSpots = new ChessPosition[8][8];
+    private ChessPiece[][] piecesOnBoard = new ChessPiece[8][8];
 
     public ChessBoard() {
         for(int i=0; i< boardSpots.length; i++){
-            for(int j=0; i<boardSpots[i].length; i++){
+            for(int j=0; j<boardSpots[i].length; j++){
                 boardSpots[i][j] = new ChessPosition(i,j);
             }
         }

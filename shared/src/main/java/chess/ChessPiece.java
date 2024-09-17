@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a single chess piece
@@ -13,7 +14,7 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
     }
@@ -52,6 +53,21 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> possibleMoves = List.of();
+        if(this.type==PieceType.BISHOP){
+            // Check Four Diagonal Directions
+
+
+            // TODO make this a function that can be called by Bishop
+            ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
+            // Needs to check if the spot is empty
+            // or if it is
+            while(board.getPiece(currentSpot)==null){
+                possibleMoves.add(new ChessMove(myPosition,currentSpot,type));
+                currentSpot.setColumn(currentSpot.getColumn()+1);
+                currentSpot.setRow(currentSpot.getRow()+1);
+            }
+        }
+        return possibleMoves;
     }
 }

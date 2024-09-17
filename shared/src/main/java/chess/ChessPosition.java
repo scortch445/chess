@@ -8,8 +8,8 @@ package chess;
  */
 public class ChessPosition {
 
-    private final int row;
-    private final int col;
+    private int row;
+    private int col;
 
     public ChessPosition(int row, int col) {
         this.row = row;
@@ -30,5 +30,19 @@ public class ChessPosition {
      */
     public int getColumn() {
         return this.col;
+    }
+
+    /**
+     * Change the Row
+     */
+    public void setRow(int _row) {
+        this.row=_row;
+    }
+
+    /**
+     * Change the Column
+     */
+    public void setColumn(int _col) {
+        this.col = _col;
     }
 }

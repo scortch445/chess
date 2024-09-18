@@ -91,10 +91,17 @@ public class ChessPiece {
         ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+dirY, myPosition.getColumn()+dirX);
 //             Needs to check if the spot is empty
 //             or if it is out of bounds
-        while(currentSpot.isInBounds() &&
-                board.getPiece(currentSpot)==null){
-            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
-            currentSpot.offset(dirX,dirY);
+        while(currentSpot.isInBounds()){
+            if(board.getPiece(currentSpot)!=null) {
+                if(board.getPiece(currentSpot).pieceColor!=this.pieceColor) {
+                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
+                }
+                break;
+            } else{
+                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
+                currentSpot.offset(dirX,dirY);
+            }
+
         }
 
         return possibleMoves;

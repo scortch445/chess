@@ -78,15 +78,22 @@ public class ChessPiece {
         if(this.type==PieceType.BISHOP){
             // Check Four Diagonal Directions
 
-            possibleMoves.addAll(checkDiagonals(board,myPosition, -1, 1));
-            possibleMoves.addAll(checkDiagonals(board,myPosition, 1, -1));
-            possibleMoves.addAll(checkDiagonals(board,myPosition,1,1));
-            possibleMoves.addAll(checkDiagonals(board,myPosition, -1, -1));
+            possibleMoves.addAll(checkAdjacents(board,myPosition, -1, 1));
+            possibleMoves.addAll(checkAdjacents(board,myPosition, 1, -1));
+            possibleMoves.addAll(checkAdjacents(board,myPosition,1,1));
+            possibleMoves.addAll(checkAdjacents(board,myPosition, -1, -1));
         }
+        if(this.type==PieceType.ROOK){
+            possibleMoves.addAll(checkAdjacents(board,myPosition, 0, 1));
+            possibleMoves.addAll(checkAdjacents(board,myPosition, 1, 0));
+            possibleMoves.addAll(checkAdjacents(board,myPosition,-1,0));
+            possibleMoves.addAll(checkAdjacents(board,myPosition, 0, -1));
+        }
+
         return possibleMoves;
     }
 
-    private Collection<ChessMove> checkDiagonals(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
+    private Collection<ChessMove> checkAdjacents(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
         Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
         ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+dirY, myPosition.getColumn()+dirX);
 //             Needs to check if the spot is empty

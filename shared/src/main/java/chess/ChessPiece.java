@@ -78,17 +78,25 @@ public class ChessPiece {
         if(this.type==PieceType.BISHOP){
             // Check Four Diagonal Directions
 
+            possibleMoves.addAll(checkDiagonals(board,myPosition, -1, 1));
+            possibleMoves.addAll(checkDiagonals(board,myPosition, 1, -1));
+            possibleMoves.addAll(checkDiagonals(board,myPosition,1,1));
+            possibleMoves.addAll(checkDiagonals(board,myPosition, -1, -1));
+        }
+        return possibleMoves;
+    }
 
-            // TODO make this a function that can be called by Bishop
-            ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
+    private Collection<ChessMove> checkDiagonals(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
+        Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
+        ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+dirY, myPosition.getColumn()+dirX);
 //             Needs to check if the spot is empty
 //             or if it is out of bounds
-            while(currentSpot.isInBounds() &&
-                    board.getPiece(currentSpot)==null){
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
-                currentSpot.offset(1,1);
-            }
+        while(currentSpot.isInBounds() &&
+                board.getPiece(currentSpot)==null){
+            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
+            currentSpot.offset(dirX,dirY);
         }
+
         return possibleMoves;
     }
 }

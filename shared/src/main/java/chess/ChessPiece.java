@@ -77,23 +77,37 @@ public class ChessPiece {
         Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
         if(this.type==PieceType.BISHOP || this.type==PieceType.QUEEN){
             // Check Four Diagonal Directions
-            possibleMoves.addAll(checkAdjacents(board,myPosition, -1, 1));
-            possibleMoves.addAll(checkAdjacents(board,myPosition, 1, -1));
-            possibleMoves.addAll(checkAdjacents(board,myPosition,1,1));
-            possibleMoves.addAll(checkAdjacents(board,myPosition, -1, -1));
+            possibleMoves.addAll(checkLongPath(board,myPosition, -1, 1));
+            possibleMoves.addAll(checkLongPath(board,myPosition, 1, -1));
+            possibleMoves.addAll(checkLongPath(board,myPosition,1,1));
+            possibleMoves.addAll(checkLongPath(board,myPosition, -1, -1));
         }
         if(this.type==PieceType.ROOK ||this.type==PieceType.QUEEN){
             // Check in four straight lines
-            possibleMoves.addAll(checkAdjacents(board,myPosition, 0, 1));
-            possibleMoves.addAll(checkAdjacents(board,myPosition, 1, 0));
-            possibleMoves.addAll(checkAdjacents(board,myPosition,-1,0));
-            possibleMoves.addAll(checkAdjacents(board,myPosition, 0, -1));
+            possibleMoves.addAll(checkLongPath(board,myPosition, 0, 1));
+            possibleMoves.addAll(checkLongPath(board,myPosition, 1, 0));
+            possibleMoves.addAll(checkLongPath(board,myPosition,-1,0));
+            possibleMoves.addAll(checkLongPath(board,myPosition, 0, -1));
+        }
+
+        if(this.type==PieceType.KING){
+            // Check adjacent tiles
+            possibleMoves.addAll(checkShortPath(board,myPosition, 0, 1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 1, 0));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -1, 0));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 0, -1));
+
+            // Check diagonal tiles
+            possibleMoves.addAll(checkShortPath(board,myPosition, 1, 1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 1, -1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -1, 1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -1, -1));
         }
 
         return possibleMoves;
     }
 
-    private Collection<ChessMove> checkAdjacents(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
+    private Collection<ChessMove> checkLongPath(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
         Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
         ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+dirY, myPosition.getColumn()+dirX);
 //             Needs to check if the spot is empty
@@ -111,6 +125,17 @@ public class ChessPiece {
 
         }
 
+        return possibleMoves;
+    }
+
+    private Collection<ChessMove> checkShortPath(ChessBoard board, ChessPosition myPosition, int dirX, int dirY) {
+        Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
+        ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+dirY, myPosition.getColumn()+dirX);
+        if(currentSpot.isInBounds() &&
+                (board.getPiece(currentSpot)==null ||
+                board.getPiece(currentSpot).pieceColor!=this.pieceColor)) {
+            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
+        }
         return possibleMoves;
     }
 }

@@ -75,15 +75,15 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
-        if(this.type==PieceType.BISHOP){
+        if(this.type==PieceType.BISHOP || this.type==PieceType.QUEEN){
             // Check Four Diagonal Directions
-
             possibleMoves.addAll(checkAdjacents(board,myPosition, -1, 1));
             possibleMoves.addAll(checkAdjacents(board,myPosition, 1, -1));
             possibleMoves.addAll(checkAdjacents(board,myPosition,1,1));
             possibleMoves.addAll(checkAdjacents(board,myPosition, -1, -1));
         }
-        if(this.type==PieceType.ROOK){
+        if(this.type==PieceType.ROOK ||this.type==PieceType.QUEEN){
+            // Check in four straight lines
             possibleMoves.addAll(checkAdjacents(board,myPosition, 0, 1));
             possibleMoves.addAll(checkAdjacents(board,myPosition, 1, 0));
             possibleMoves.addAll(checkAdjacents(board,myPosition,-1,0));

@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -45,6 +46,26 @@ public class ChessPiece {
         return this.type;
     }
 
+    @Override
+    public String toString() {
+        return "ChessPiece{" + pieceColor +
+                "," + type +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -53,7 +74,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleMoves = List.of();
+        Collection<ChessMove> possibleMoves = new java.util.ArrayList<>(List.of());
         if(this.type==PieceType.BISHOP){
             // Check Four Diagonal Directions
 
@@ -62,11 +83,11 @@ public class ChessPiece {
             ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
             // Needs to check if the spot is empty
             // or if it is
-            while(board.getPiece(currentSpot)==null){
-                possibleMoves.add(new ChessMove(myPosition,currentSpot,type));
-                currentSpot.setColumn(currentSpot.getColumn()+1);
-                currentSpot.setRow(currentSpot.getRow()+1);
-            }
+//            while(board.getPiece(currentSpot)==null){
+//                possibleMoves.add(new ChessMove(myPosition,currentSpot,type));
+//                currentSpot.setColumn(currentSpot.getColumn()+1);
+//                currentSpot.setRow(currentSpot.getRow()+1);
+//            }
         }
         return possibleMoves;
     }

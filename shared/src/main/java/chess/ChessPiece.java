@@ -90,7 +90,7 @@ public class ChessPiece {
             possibleMoves.addAll(checkLongPath(board,myPosition, 0, -1));
         }
 
-        if(this.type==PieceType.KING){
+        else if(this.type==PieceType.KING){
             // Check adjacent tiles
             possibleMoves.addAll(checkShortPath(board,myPosition, 0, 1));
             possibleMoves.addAll(checkShortPath(board,myPosition, 1, 0));
@@ -102,6 +102,20 @@ public class ChessPiece {
             possibleMoves.addAll(checkShortPath(board,myPosition, 1, -1));
             possibleMoves.addAll(checkShortPath(board,myPosition, -1, 1));
             possibleMoves.addAll(checkShortPath(board,myPosition, -1, -1));
+        }
+
+        else if(this.type==PieceType.KNIGHT){
+            // Check Right Side
+            possibleMoves.addAll(checkShortPath(board,myPosition, 1, 2));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 2, 1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 2, -1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, 1, -2));
+
+            // Check Left Side
+            possibleMoves.addAll(checkShortPath(board,myPosition, -1, 2));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -2, 1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -2, -1));
+            possibleMoves.addAll(checkShortPath(board,myPosition, -1, -2));
         }
 
         return possibleMoves;

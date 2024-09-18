@@ -118,6 +118,55 @@ public class ChessPiece {
             possibleMoves.addAll(checkShortPath(board,myPosition, -1, -2));
         }
 
+        else if(this.type==PieceType.PAWN){
+            // Check Forward
+            int offsetY = pieceColor==ChessGame.TeamColor.WHITE ? 1 : -1;
+            ChessPosition forwardSpot = new ChessPosition(myPosition.getRow()+offsetY, myPosition.getColumn());
+            if(forwardSpot.isInBounds() &&
+                    board.getPiece(forwardSpot)==null){
+                possibleMoves.add(new ChessMove(myPosition,forwardSpot,null));
+
+                // If the forward spot is open, then we can check for the second
+                // forward spot and if it's the first move
+
+                // Check White initial move
+                if(this.pieceColor==ChessGame.TeamColor.WHITE
+                        && myPosition.getRow()==2){
+                    ChessPosition newMoveSpot = new ChessPosition(myPosition.getRow()+2,myPosition.getColumn());
+                    if(board.getPiece(newMoveSpot) == null){
+                        possibleMoves.add(new ChessMove(myPosition,newMoveSpot,null));
+                    }
+                }
+                // Check Black initial move
+                if(this.pieceColor==ChessGame.TeamColor.BLACK
+                        && myPosition.getRow()==7){
+                    ChessPosition newMoveSpot = new ChessPosition(myPosition.getRow()-2,myPosition.getColumn());
+                    if(board.getPiece(newMoveSpot) == null){
+                        possibleMoves.add(new ChessMove(myPosition,newMoveSpot,null));
+                    }
+                }
+            }
+
+            // Check Attacks
+
+            // Left Attack
+            ChessPosition forwardLeft = new ChessPosition(forwardSpot.getRow(),forwardSpot.getColumn()-1);
+            if(forwardLeft.isInBounds() &&
+                    board.getPiece(forwardLeft)!=null &&
+                    board.getPiece(forwardLeft).pieceColor!=this.pieceColor){
+                possibleMoves.add(new ChessMove(myPosition,forwardLeft,null));
+            }
+
+            // Right Attack
+            ChessPosition forwardRight = new ChessPosition(forwardSpot.getRow(),forwardSpot.getColumn()+1);
+            // Check if about to be promoted (Let's do this last)
+            if(forwardRight.isInBounds() &&
+                    board.getPiece(forwardRight)!=null &&
+                    board.getPiece(forwardRight).pieceColor!=this.pieceColor){
+                possibleMoves.add(new ChessMove(myPosition,forwardRight,null));
+            }
+        }
+
         return possibleMoves;
     }
 

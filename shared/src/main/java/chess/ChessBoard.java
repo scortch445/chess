@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -13,6 +12,39 @@ public class ChessBoard {
 
     private final ChessPosition[][] boardSpots = new ChessPosition[8][8];
     private ChessPiece[][] piecesOnBoard = new ChessPiece[8][8];
+
+    private ChessPiece.PieceType[] starterPieces = {
+            ChessPiece.PieceType.KING,
+            ChessPiece.PieceType.QUEEN,
+            ChessPiece.PieceType.KNIGHT,
+            ChessPiece.PieceType.KNIGHT,
+            ChessPiece.PieceType.BISHOP,
+            ChessPiece.PieceType.BISHOP,
+            ChessPiece.PieceType.ROOK,
+            ChessPiece.PieceType.ROOK,
+
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN,
+
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN,
+            ChessPiece.PieceType.PAWN
+            };
+
+    /**
+     * Number of white pieces off the board of each type:
+     * King,Queen,Knight,Bishop,Rook,Pawn
+     */
+    private ArrayList<ChessPiece.PieceType> whitePieces;
+
+    /**
+     * Number of black pieces off the board of each type:
+     * King,Queen,Knight,Bishop,Rook,Pawn
+     */
+    private ArrayList<ChessPiece.PieceType> blackPieces;
 
     @Override
     public String toString() {
@@ -41,6 +73,9 @@ public class ChessBoard {
                 boardSpots[i][j] = new ChessPosition(i,j);
             }
         }
+
+        whitePieces.addAll(List.of(starterPieces));
+        whitePieces.addAll(List.of(starterPieces));
     }
 
     /**
@@ -51,6 +86,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         piecesOnBoard[position.getColumn()-1][position.getRow()-1] = piece;
+//        TODO take away from whitePieces or blackPieces
     }
 
     /**
@@ -62,6 +98,26 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return piecesOnBoard[position.getColumn()-1][position.getRow()-1];
+    }
+
+    public Collection<ChessPiece.PieceType> promotionPiecesAvailable(ChessGame.TeamColor color){
+        Collection<ChessPiece.PieceType> piecesAvailable = new ArrayList<>();
+        Collection<ChessPiece.PieceType> piecesToCheck = color == ChessGame.TeamColor.WHITE ? whitePieces : blackPieces;
+        if(color == ChessGame.TeamColor.WHITE){
+            if(piecesToCheck.contains(ChessPiece.PieceType.QUEEN)){
+                piecesAvailable.add(ChessPiece.PieceType.QUEEN);
+            }
+            if(piecesToCheck.contains(ChessPiece.PieceType.KNIGHT)){
+                piecesAvailable.add(ChessPiece.PieceType.KNIGHT);
+            }
+            if(piecesToCheck.contains(ChessPiece.PieceType.BISHOP)){
+                piecesAvailable.add(ChessPiece.PieceType.BISHOP);
+            }
+            if(piecesToCheck.contains(ChessPiece.PieceType.ROOK)){
+                piecesAvailable.add(ChessPiece.PieceType.ROOK);
+            }
+        }
+        return piecesAvailable;
     }
 
     /**

@@ -81,13 +81,13 @@ public class ChessPiece {
 
             // TODO make this a function that can be called by Bishop
             ChessPosition currentSpot = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-            // Needs to check if the spot is empty
-            // or if it is
-//            while(board.getPiece(currentSpot)==null){
-//                possibleMoves.add(new ChessMove(myPosition,currentSpot,type));
-//                currentSpot.setColumn(currentSpot.getColumn()+1);
-//                currentSpot.setRow(currentSpot.getRow()+1);
-//            }
+//             Needs to check if the spot is empty
+//             or if it is out of bounds
+            while(currentSpot.isInBounds() &&
+                    board.getPiece(currentSpot)==null){
+                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
+                currentSpot.offset(1,1);
+            }
         }
         return possibleMoves;
     }

@@ -68,4 +68,14 @@ public class ChessPosition {
         this.col = _col;
     }
 
+    public void offset(int offsetCol, int offSetRow){
+        this.col+=offsetCol;
+        this.row+=offSetRow;
+    }
+
+    public boolean isInBounds(){
+        return col > 0 && col <= 8
+                && row > 0 && row <= 8;
+    }
+
 }

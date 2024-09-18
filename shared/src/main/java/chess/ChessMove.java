@@ -18,7 +18,7 @@ public class ChessMove {
     public String toString() {
         return "Move{" + startPosition +
                 "->" + endPosition +
-                ", pPiece=" + promotionPiece +
+                (promotionPiece==null ? "" : ", pPiece=" + promotionPiece) +
                 '}';
     }
 

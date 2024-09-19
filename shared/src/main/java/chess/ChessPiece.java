@@ -122,9 +122,11 @@ public class ChessPiece {
             // Check Forward
             int offsetY = pieceColor==ChessGame.TeamColor.WHITE ? 1 : -1;
             ChessPosition forwardSpot = new ChessPosition(myPosition.getRow()+offsetY, myPosition.getColumn());
+
+
             if(forwardSpot.isInBounds() &&
                     board.getPiece(forwardSpot)==null){
-                possibleMoves.add(new ChessMove(myPosition,forwardSpot,null));
+                addPawnPromotionMoves(possibleMoves,myPosition,forwardSpot,board);
 
                 // If the forward spot is open, then we can check for the second
                 // forward spot and if it's the first move
@@ -154,7 +156,7 @@ public class ChessPiece {
             if(forwardLeft.isInBounds() &&
                     board.getPiece(forwardLeft)!=null &&
                     board.getPiece(forwardLeft).pieceColor!=this.pieceColor){
-                possibleMoves.add(new ChessMove(myPosition,forwardLeft,null));
+                addPawnPromotionMoves(possibleMoves,myPosition,forwardLeft,board);
             }
 
             // Right Attack
@@ -163,7 +165,7 @@ public class ChessPiece {
             if(forwardRight.isInBounds() &&
                     board.getPiece(forwardRight)!=null &&
                     board.getPiece(forwardRight).pieceColor!=this.pieceColor){
-                possibleMoves.add(new ChessMove(myPosition,forwardRight,null));
+                addPawnPromotionMoves(possibleMoves,myPosition,forwardRight,board);
             }
         }
 
@@ -200,5 +202,31 @@ public class ChessPiece {
             possibleMoves.add(new ChessMove(myPosition,new ChessPosition(currentSpot.getRow(), currentSpot.getColumn()),null));
         }
         return possibleMoves;
+    }
+
+    private void addPawnPromotionMoves(Collection<ChessMove> possibleMoves,
+                                       ChessPosition myPosition,
+                                       ChessPosition forwardSpot,
+                                       ChessBoard board){
+        // Check if it should be promoted
+        if(
+           ((this.pieceColor == ChessGame.TeamColor.WHITE && forwardSpot.getRow() == 8)
+        || (this.pieceColor == ChessGame.TeamColor.BLACK && forwardSpot.getRow() == 1))
+
+        // Check if there are promotion pieces available
+        && (!board.promotionPiecesAvailable(this.pieceColor).isEmpty())
+
+        ){
+            for(ChessPiece.PieceType p : board.promotionPiecesAvailable(this.pieceColor)){
+                //For every piece available, add that as a possible move
+                possibleMoves.add(new ChessMove(myPosition,forwardSpot,p));
+            }
+        }
+
+        // Otherwise, just add the move without a promotion
+        else {
+            possibleMoves.add(new ChessMove(myPosition,forwardSpot,null));
+        }
+
     }
 }

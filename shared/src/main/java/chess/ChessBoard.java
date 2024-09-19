@@ -89,7 +89,6 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         piecesOnBoard[position.getColumn()-1][position.getRow()-1] = piece;
-//        TODO take away from whitePieces or blackPieces
         Collection<ChessPiece.PieceType> teamToRemoveFrom = piece.getTeamColor()== ChessGame.TeamColor.WHITE ? whitePieces : blackPieces;
         teamToRemoveFrom.remove(piece.getPieceType());
     }
@@ -108,19 +107,17 @@ public class ChessBoard {
     public Collection<ChessPiece.PieceType> promotionPiecesAvailable(ChessGame.TeamColor color){
         Collection<ChessPiece.PieceType> piecesAvailable = new ArrayList<>();
         Collection<ChessPiece.PieceType> piecesToCheck = color == ChessGame.TeamColor.WHITE ? whitePieces : blackPieces;
-        if(color == ChessGame.TeamColor.WHITE){
-            if(piecesToCheck.contains(ChessPiece.PieceType.QUEEN)){
-                piecesAvailable.add(ChessPiece.PieceType.QUEEN);
-            }
-            if(piecesToCheck.contains(ChessPiece.PieceType.KNIGHT)){
-                piecesAvailable.add(ChessPiece.PieceType.KNIGHT);
-            }
-            if(piecesToCheck.contains(ChessPiece.PieceType.BISHOP)){
-                piecesAvailable.add(ChessPiece.PieceType.BISHOP);
-            }
-            if(piecesToCheck.contains(ChessPiece.PieceType.ROOK)){
-                piecesAvailable.add(ChessPiece.PieceType.ROOK);
-            }
+        if(piecesToCheck.contains(ChessPiece.PieceType.QUEEN)){
+            piecesAvailable.add(ChessPiece.PieceType.QUEEN);
+        }
+        if(piecesToCheck.contains(ChessPiece.PieceType.KNIGHT)){
+            piecesAvailable.add(ChessPiece.PieceType.KNIGHT);
+        }
+        if(piecesToCheck.contains(ChessPiece.PieceType.BISHOP)){
+            piecesAvailable.add(ChessPiece.PieceType.BISHOP);
+        }
+        if(piecesToCheck.contains(ChessPiece.PieceType.ROOK)){
+            piecesAvailable.add(ChessPiece.PieceType.ROOK);
         }
         return piecesAvailable;
     }

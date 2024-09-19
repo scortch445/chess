@@ -213,13 +213,13 @@ public class ChessPiece {
            ((this.pieceColor == ChessGame.TeamColor.WHITE && forwardSpot.getRow() == 8)
         || (this.pieceColor == ChessGame.TeamColor.BLACK && forwardSpot.getRow() == 1))
 
-        // Check if there are promotion pieces available
-        && (!board.promotionPiecesAvailable(this.pieceColor).isEmpty())
-
         ){
-            for(ChessPiece.PieceType p : board.promotionPiecesAvailable(this.pieceColor)){
+            for(ChessPiece.PieceType p : PieceType.values()){
                 //For every piece available, add that as a possible move
-                possibleMoves.add(new ChessMove(myPosition,forwardSpot,p));
+
+                if(p != PieceType.KING && p != PieceType.PAWN){
+                    possibleMoves.add(new ChessMove(myPosition,forwardSpot,p));
+                }
             }
         }
 

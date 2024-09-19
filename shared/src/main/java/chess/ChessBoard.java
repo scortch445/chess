@@ -74,8 +74,11 @@ public class ChessBoard {
             }
         }
 
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
+
         whitePieces.addAll(List.of(starterPieces));
-        whitePieces.addAll(List.of(starterPieces));
+        blackPieces.addAll(List.of(starterPieces));
     }
 
     /**
@@ -87,6 +90,8 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         piecesOnBoard[position.getColumn()-1][position.getRow()-1] = piece;
 //        TODO take away from whitePieces or blackPieces
+        Collection<ChessPiece.PieceType> teamToRemoveFrom = piece.getTeamColor()== ChessGame.TeamColor.WHITE ? whitePieces : blackPieces;
+        teamToRemoveFrom.remove(piece.getPieceType());
     }
 
     /**

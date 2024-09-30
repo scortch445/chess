@@ -12,6 +12,16 @@ public class ChessBoard {
 
     // boardSpots[row][col]
     private ChessPiece[][] piecesOnBoard = new ChessPiece[8][8];
+    private static ChessPiece.PieceType[] initialRowSetup = {
+            ChessPiece.PieceType.ROOK,
+            ChessPiece.PieceType.KNIGHT,
+            ChessPiece.PieceType.BISHOP,
+            ChessPiece.PieceType.QUEEN,
+            ChessPiece.PieceType.KING,
+            ChessPiece.PieceType.BISHOP,
+            ChessPiece.PieceType.KNIGHT,
+            ChessPiece.PieceType.ROOK
+    };
 
     @Override
     public String toString() {
@@ -58,6 +68,19 @@ public class ChessBoard {
         return piecesOnBoard[position.getRow()-1][position.getColumn()-1];
     }
 
+    public ChessPosition findPiece(ChessGame.TeamColor team, ChessPiece.PieceType type){
+        for(int i = 1; i<=8; i++){
+            for(int j = 1; j<=8; j++){
+                ChessPosition checkPosition = new ChessPosition(i,j);
+                ChessPiece piece = getPiece(checkPosition);
+                if(piece!=null && piece.getTeamColor() == team && piece.getPieceType() == type){
+                    return checkPosition;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -68,14 +91,9 @@ public class ChessBoard {
         // White Pieces
 
         // First Row
-        piecesOnBoard[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        piecesOnBoard[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        piecesOnBoard[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        piecesOnBoard[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        piecesOnBoard[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        piecesOnBoard[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        piecesOnBoard[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        piecesOnBoard[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        for(int i = 0; i<8; i++){
+            piecesOnBoard[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, initialRowSetup[i]);
+        }
 
         // Pawn Row
         for(int i=0; i<8; i++){
@@ -85,14 +103,9 @@ public class ChessBoard {
         // Black Pieces
 
         // Back Row
-        piecesOnBoard[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        piecesOnBoard[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        piecesOnBoard[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        piecesOnBoard[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        piecesOnBoard[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        piecesOnBoard[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        piecesOnBoard[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        piecesOnBoard[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        for(int i = 0; i<8; i++){
+            piecesOnBoard[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, initialRowSetup[i]);
+        }
 
         // Pawn Row
         for(int i=0; i<8; i++){

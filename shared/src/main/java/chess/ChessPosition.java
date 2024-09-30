@@ -20,8 +20,8 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "[" + col +
-                "," + row +
+        return "[" + row +
+                "," + col +
                 ']';
     }
 

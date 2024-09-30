@@ -98,8 +98,10 @@ public class ChessGame {
         TeamColor otherTeamColor = teamColor==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor);
 
+//        TODO looks like a bug where the rows and columns are mixed up for move
         for(ChessMove move : otherTeamsPossibleMoves){
-            if(move.getEndPosition() == kingPosition){
+            if(move.getEndPosition().getRow() == kingPosition.getRow()
+                && move.getEndPosition().getColumn() == kingPosition.getColumn()){
                 return true;
             }
         }

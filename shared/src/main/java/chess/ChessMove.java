@@ -42,6 +42,14 @@ public class ChessMove {
         this.promotionPiece = promotionPiece;
     }
 
+
+    // Constructor to copy one ChessMove to another
+    public ChessMove(ChessMove that) {
+        this.startPosition = that.startPosition;
+        this.endPosition = that.endPosition;
+        this.promotionPiece = that.promotionPiece;
+    }
+
     /**
      * @return ChessPosition of starting location
      */

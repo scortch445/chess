@@ -89,19 +89,27 @@ public class ChessGame {
     }
 
     /**
+     * Implements the function below with the current Game's ChessBoard
+     */
+    public boolean isInCheck(TeamColor teamColor) {
+        return isInCheck(teamColor, this.board);
+    }
+
+    /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
+     * @param boardToCheck which board (simulated or current) to check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition = board.findPiece(teamColor, ChessPiece.PieceType.KING);
+    public boolean isInCheck(TeamColor teamColor, ChessBoard boardToCheck) {
+        ChessPosition kingPosition = boardToCheck.findPiece(teamColor, ChessPiece.PieceType.KING);
         TeamColor otherTeamColor = teamColor==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
-        Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor);
+        Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor, boardToCheck);
 
         for(ChessMove move : otherTeamsPossibleMoves){
             if(move.getEndPosition().getRow() == kingPosition.getRow()
-                && move.getEndPosition().getColumn() == kingPosition.getColumn()){
+                    && move.getEndPosition().getColumn() == kingPosition.getColumn()){
                 return true;
             }
         }
@@ -116,22 +124,31 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        Collection<ChessMove> checkedTeamPossibleMoves = getAllPossibleMoves(teamColor);
+        Collection<ChessMove> checkedTeamPossibleMoves = getAllPossibleMoves(teamColor, this.board);
 
         // This board is meant to test every move of the checked team
         // to see if the enemy can still kill the king after that move
-        ChessBoard testBoard = new ChessBoard(this.board);
+
 
         // 1) Loop through each possible move
-        // 2) create a board having done that move
-        // 3) See if we are still in check
-        // 4) If not, add that to the movesToGetOutOfCheck ArrayList
         Collection<ChessMove> movesToGetOutOfCheck = new ArrayList<>();
         for(ChessMove move : checkedTeamPossibleMoves){
+            // 2) create a board having done that move
+            ChessBoard testBoard = new ChessBoard(this.board);
+            ChessPiece movingPiece = testBoard.getPiece(move.getStartPosition());
 
+            testBoard.removePiece(move.getStartPosition());
+            testBoard.addPiece(move.getEndPosition(), movingPiece);
+
+            // 3) See if we are still in check
+            if(!isInCheck(teamColor, testBoard)){
+                // 4) If not, add that to the movesToGetOutOfCheck ArrayList
+                movesToGetOutOfCheck.add(new ChessMove(move));
+            }
         }
 
-        return true;
+        // If there is no way to get out of check, then return that we are in Checkmate
+        return movesToGetOutOfCheck.isEmpty();
 
     }
 
@@ -164,14 +181,14 @@ public class ChessGame {
         return this.board;
     }
 
-    private Collection<ChessMove> getAllPossibleMoves(TeamColor team){
+    private Collection<ChessMove> getAllPossibleMoves(TeamColor team, ChessBoard boardToCheck){
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         for(int i = 1; i<=8; i++){
             for(int j = 1; j<=8; j++){
                 ChessPosition checkPosition = new ChessPosition(i,j);
-                ChessPiece piece = board.getPiece(checkPosition);
+                ChessPiece piece = boardToCheck.getPiece(checkPosition);
                 if(piece!=null && piece.getTeamColor() == team){
-                    possibleMoves.addAll(piece.pieceMoves(board,checkPosition));
+                    possibleMoves.addAll(piece.pieceMoves(boardToCheck,checkPosition));
                 }
             }
         }

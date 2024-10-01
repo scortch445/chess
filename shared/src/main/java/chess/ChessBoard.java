@@ -12,7 +12,7 @@ public class ChessBoard {
 
     // boardSpots[row][col]
     private ChessPiece[][] piecesOnBoard = new ChessPiece[8][8];
-    private static ChessPiece.PieceType[] initialRowSetup = {
+    private static final ChessPiece.PieceType[] initialRowSetup = {
             ChessPiece.PieceType.ROOK,
             ChessPiece.PieceType.KNIGHT,
             ChessPiece.PieceType.BISHOP,
@@ -61,6 +61,15 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         piecesOnBoard[position.getRow()-1][position.getColumn()-1] = piece;
+    }
+
+    /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position where to remove the piece from
+     */
+    public void removePiece(ChessPosition position){
+        piecesOnBoard[position.getRow()-1][position.getColumn()-1] = null;
     }
 
     /**

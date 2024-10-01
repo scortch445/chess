@@ -13,16 +13,17 @@ import java.util.Objects;
 public class ChessGame {
 
     private ChessBoard board;
+    private TeamColor whosTurnIsIt;
 
     public ChessGame() {
-
+        whosTurnIsIt = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return whosTurnIsIt;
     }
 
     /**
@@ -31,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        whosTurnIsIt = team;
     }
 
     /**
@@ -194,5 +195,11 @@ public class ChessGame {
         }
 
         return possibleMoves;
+    }
+
+    // If it is currently white's turn, make it black's turn
+    // and vice versa
+    private void switchWhosTurnItIs(){
+        whosTurnIsIt = whosTurnIsIt == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 }

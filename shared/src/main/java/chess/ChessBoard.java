@@ -47,6 +47,12 @@ public class ChessBoard {
 
     }
 
+
+    // Copy constructor
+    public ChessBoard(ChessBoard that){
+        this.piecesOnBoard = that.piecesOnBoard;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *

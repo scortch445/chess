@@ -73,6 +73,7 @@ public class ChessGame {
         if(this.board.getPiece(startPosition)==null){
             return null;
         } else{
+//             TODO implement isInCheck logic
             return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         }
     }
@@ -98,7 +99,6 @@ public class ChessGame {
         TeamColor otherTeamColor = teamColor==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor);
 
-//        TODO looks like a bug where the rows and columns are mixed up for move
         for(ChessMove move : otherTeamsPossibleMoves){
             if(move.getEndPosition().getRow() == kingPosition.getRow()
                 && move.getEndPosition().getColumn() == kingPosition.getColumn()){
@@ -116,7 +116,23 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> checkedTeamPossibleMoves = getAllPossibleMoves(teamColor);
+
+        // This board is meant to test every move of the checked team
+        // to see if the enemy can still kill the king after that move
+        ChessBoard testBoard = new ChessBoard(this.board);
+
+        // 1) Loop through each possible move
+        // 2) create a board having done that move
+        // 3) See if we are still in check
+        // 4) If not, add that to the movesToGetOutOfCheck ArrayList
+        Collection<ChessMove> movesToGetOutOfCheck = new ArrayList<>();
+        for(ChessMove move : checkedTeamPossibleMoves){
+
+        }
+
+        return true;
+
     }
 
     /**

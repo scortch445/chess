@@ -48,9 +48,15 @@ public class ChessBoard {
     }
 
 
-    // Copy constructor
+    // Deep Copy constructor
     public ChessBoard(ChessBoard that){
-        this.piecesOnBoard = that.piecesOnBoard;
+        for(int i=0; i<8; i++){
+            for(int j=0; j<8; j++){
+                if(that.piecesOnBoard[i][j]!=null){
+                    this.piecesOnBoard[i][j] = new ChessPiece(that.piecesOnBoard[i][j]);
+                }
+            }
+        }
     }
 
     /**

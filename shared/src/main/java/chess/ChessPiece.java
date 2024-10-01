@@ -20,6 +20,12 @@ public class ChessPiece {
         this.type = type;
     }
 
+    // Copy Constructor
+    public ChessPiece(ChessPiece that) {
+        this.pieceColor = that.pieceColor;
+        this.type = that.type;
+    }
+
     /**
      * The various different chess piece options
      */

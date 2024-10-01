@@ -76,7 +76,7 @@ public class ChessGame {
         if(this.board.getPiece(startPosition)==null){
             return null;
         } else{
-//             TODO implement isInCheck logic
+//             TODO implement isInCheck logic, after having made a move
             return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         }
     }
@@ -138,7 +138,7 @@ public class ChessGame {
         for(ChessMove move : checkedTeamPossibleMoves){
             // 2) create a board having done that move
             ChessBoard testBoard = new ChessBoard(this.board);
-            ChessPiece movingPiece = testBoard.getPiece(move.getStartPosition());
+            ChessPiece movingPiece = this.board.getPiece(move.getStartPosition());
 
             testBoard.removePiece(move.getStartPosition());
             testBoard.addPiece(move.getEndPosition(), movingPiece);

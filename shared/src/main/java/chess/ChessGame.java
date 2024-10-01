@@ -76,8 +76,33 @@ public class ChessGame {
         if(this.board.getPiece(startPosition)==null){
             return null;
         } else{
-//             TODO implement isInCheck logic, after having made a move
-            return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+            Collection<ChessMove> pieceMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+
+            // This board is meant to test every move of the piece at startPosition
+            // to see if it is safe to make without getting the king killed
+
+
+            // 1) Loop through each possible move
+            Collection<ChessMove> listOfValidMoves = new ArrayList<>();
+            for(ChessMove move : pieceMoves){
+                // 2) create a board having done that move
+                ChessBoard testBoard = new ChessBoard(this.board);
+                ChessPiece movingPiece = this.board.getPiece(move.getStartPosition());
+
+                testBoard.removePiece(move.getStartPosition());
+                testBoard.addPiece(move.getEndPosition(), movingPiece);
+
+                // 3) See if we are still in check
+                if(!isInCheck(movingPiece.getTeamColor(), testBoard)){
+                    // 4) If not, add that to the movesToGetOutOfCheck ArrayList
+                    listOfValidMoves.add(new ChessMove(move));
+                }
+            }
+
+
+
+            // Return those moves that will not place the team in check.
+            return listOfValidMoves;
         }
     }
 
@@ -127,6 +152,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+//        TODO use validMoves to abstract out most of this code
+
         Collection<ChessMove> checkedTeamPossibleMoves = getAllPossibleMoves(teamColor, this.board);
 
         // This board is meant to test every move of the checked team

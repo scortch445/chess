@@ -113,7 +113,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        // If the move is valid
+        if(validMoves(move.getStartPosition())==null)
+            throw new InvalidMoveException("The board has no piece at the move's start position! " + move.toString());
+
+        if(validMoves(move.getStartPosition()).contains(move)){
+            if (this.board.getPiece(move.getStartPosition()) == null)
+                throw new InvalidMoveException("The board has no piece at the move's start position!");
+            if (this.board.getPiece(move.getStartPosition()).getTeamColor()!=whosTurnIsIt)
+                throw new InvalidMoveException("Wrong persons turn! It's actually "+whosTurnIsIt+"'s turn!");
+
+            ChessPiece movingPiece =
+                    (move.getPromotionPiece() == null) ? this.board.getPiece(move.getStartPosition())
+                            : new ChessPiece(whosTurnIsIt, move.getPromotionPiece());
+
+            board.removePiece(move.getStartPosition());
+            board.addPiece(move.getEndPosition(), movingPiece);
+
+            switchWhosTurnItIs();
+        } else{
+            throw new InvalidMoveException("Invalid Move! "+ move.toString());
+        }
     }
 
     /**
@@ -132,6 +152,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor, ChessBoard boardToCheck) {
         ChessPosition kingPosition = boardToCheck.findPiece(teamColor, ChessPiece.PieceType.KING);
+        // If there is no king, then you're not in check
+        // Haha, this is mostly for testing purposes
+        if (kingPosition==null) return false;
         TeamColor otherTeamColor = teamColor==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor, boardToCheck);
 

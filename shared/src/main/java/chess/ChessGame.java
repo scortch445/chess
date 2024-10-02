@@ -213,6 +213,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        ChessPosition kingPosition = board.findPiece(teamColor, ChessPiece.PieceType.KING);
+        // If there is no king, then you're not in stalemate
+        // Haha, this is mostly for testing purposes
+        if (kingPosition==null) return false;
+
+        TeamColor otherTeamColor = teamColor==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        Collection<ChessMove> otherTeamsPossibleMoves = getAllPossibleMoves(otherTeamColor, board);
+        for(ChessMove move : otherTeamsPossibleMoves){
+            // If the king is being attacked, it's not a stalemate
+            // Instead, it should be a check or checkmate
+            if(move.getEndPosition().getRow() == kingPosition.getRow()
+                    && move.getEndPosition().getColumn() == kingPosition.getColumn()){
+                return false;
+            }
+        }
+
+
         return isInCheckmate(teamColor);
     }
 

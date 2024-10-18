@@ -19,7 +19,7 @@ public class Handler {
         var userData = new Gson().fromJson(req.body(), UserData.class);
         service.register(userData);
 
-        return "registered! (not really, still need to implement this part)";
+        return "{registered! (not really, still need to implement this part)}";
     }
 
 }

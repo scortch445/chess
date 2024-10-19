@@ -4,6 +4,7 @@ import model.AuthData;
 import model.UserData;
 import server.InvalidRequest;
 import server.ServerException;
+import server.UnauthorizedRequest;
 import spark.Request;
 
 import java.util.UUID;
@@ -34,7 +35,15 @@ public class Service {
     }
 
     public AuthData login(UserData userData) throws ServerException {
-        return null;
+
+        UserData usr = dataAccess.getUser(userData.username());
+        if(usr==null|| usr.password() != userData.password()){
+            throw new UnauthorizedRequest();
+        } else{
+            AuthData authData = createAuth(usr.username());
+            dataAccess.saveAuth(authData);
+            return authData;
+        }
     }
 
     private AuthData createAuth(String username){

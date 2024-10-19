@@ -26,6 +26,11 @@ public class ServiceTests {
         service.clear();
     }
 
+    @BeforeEach
+    void setup() throws ServerException{
+        service.clear();
+    }
+
 
     // DataAccess should use @ParameterizedTest with @ValueSource
 
@@ -66,8 +71,11 @@ public class ServiceTests {
 
     @Test
     void loginSuccess(){
-        registerSuccess();
-        UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+
+        assertEquals(AuthData.class, assertDoesNotThrow(() -> service.register(user)).getClass());
+
+        UserData loginDetails = new UserData("Test Username", "Test Password", null);
         assertEquals(AuthData.class, assertDoesNotThrow(()->service.login(loginDetails)).getClass());
     }
 

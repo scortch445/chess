@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
+import server.InvalidRequest;
 import server.ServerException;
 import service.Service;
 import service.ServiceException;
@@ -31,6 +32,12 @@ public class Handler {
     public String registerUser(Request req, Response res){
         // catch the response if an exception is thrown
         var userData = new Gson().fromJson(req.body(), UserData.class);
+        if(userData.username()==null || userData.password()==null || userData.email()==null){
+            var e = new InvalidRequest();
+            res.status(e.statusCode);
+            return e.toJson();
+        }
+
         try {
             AuthData authData = service.register(userData);
             return new Gson().toJson(Map.of("username",authData.username(),"authToken", authData.authToken()));

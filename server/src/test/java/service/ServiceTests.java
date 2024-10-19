@@ -32,13 +32,13 @@ public class ServiceTests {
     void registerSuccess(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
 
-        assertEquals(AuthData.class, service.register(user).getClass());
+        assertEquals(AuthData.class, assertDoesNotThrow(() -> service.register(user)).getClass());
     }
 
     @Test
     void registerFailure(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
-        service.register(user);
+        assertDoesNotThrow(() -> service.register(user));
 
         assertThrows(InvalidRequest.class, () -> service.register(user));
     }

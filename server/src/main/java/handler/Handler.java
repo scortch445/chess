@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import model.UserData;
+import server.ServerException;
 import service.Service;
 import service.ServiceException;
 import spark.Request;
@@ -17,7 +18,12 @@ public class Handler {
     public String registerUser(Request req, Response res){
         // catch the response if an exception is thrown
         var userData = new Gson().fromJson(req.body(), UserData.class);
-        service.register(userData);
+        try {
+            service.register(userData);
+        } catch(ServerException e){
+            // TODO return the proper status code and json
+            return "error";
+        }
 
         return "{registered! (not really, still need to implement this part)}";
     }

@@ -2,6 +2,7 @@ package service;
 import dataaccess.DataAccess;
 import model.AuthData;
 import model.UserData;
+import server.InvalidRequest;
 import server.ServerException;
 import spark.Request;
 
@@ -13,13 +14,13 @@ public class Service {
         this.dataAccess = dataAccess;
     }
 
-    public AuthData register(UserData userData) {
+    public AuthData register(UserData userData) throws InvalidRequest {
         if(dataAccess.getUser(userData.username())==null){
             dataAccess.saveUser(userData);
 
             return null;
         } else{
-            return null;
+            throw new InvalidRequest(403, "Error: already taken");
         }
     }
 

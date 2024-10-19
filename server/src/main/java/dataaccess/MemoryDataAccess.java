@@ -27,8 +27,23 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
+    public AuthData getAuth(String authToken) {
+        for(AuthData authData : authDatas){
+            if(Objects.equals(authData.authToken(), authToken)){
+                return authData;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void saveAuth(AuthData authData) {
         authDatas.add(authData);
+    }
+
+    @Override
+    public void deleteAuth(AuthData authData) {
+        authDatas.remove(authData);
     }
 
     @Override

@@ -79,5 +79,21 @@ public class ServiceTests {
         assertEquals(AuthData.class, assertDoesNotThrow(()->service.login(loginDetails)).getClass());
     }
 
+    @Test
+    void logoutSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertDoesNotThrow(()->service.logout(authData.authToken()));
+    }
+
+    @Test
+    void logoutUnauthorized(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertThrows(UnauthorizedRequest.class, ()->service.logout("Wrong authToken"));
+    }
+
 
 }

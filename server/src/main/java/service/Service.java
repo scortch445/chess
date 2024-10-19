@@ -2,6 +2,7 @@ package service;
 import dataaccess.DataAccess;
 import model.AuthData;
 import model.UserData;
+import server.ServerException;
 import spark.Request;
 
 public class Service {
@@ -12,7 +13,7 @@ public class Service {
         this.dataAccess = dataAccess;
     }
 
-    public AuthData register(UserData userData){
+    public AuthData register(UserData userData) {
         if(dataAccess.getUser(userData.username())==null){
             dataAccess.saveUser(userData);
 

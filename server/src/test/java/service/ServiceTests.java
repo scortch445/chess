@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import server.InvalidRequest;
+import server.ServerException;
 import service.Service;
 
 public class ServiceTests {
@@ -34,7 +37,10 @@ public class ServiceTests {
 
     @Test
     void registerFailure(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        service.register(user);
 
+        assertThrows(InvalidRequest.class, () -> service.register(user));
     }
 
     @Test

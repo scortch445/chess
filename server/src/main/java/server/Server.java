@@ -18,6 +18,7 @@ public class Server {
         Service service = new Service(memoryDataAccess);
         Handler handler = new Handler(service);
 
+        Spark.delete("/db", handler::clear);
         Spark.post("/user", handler::registerUser); // Register
         Spark.get("/game", (req, res) -> ("Hello World")); // List Games
 

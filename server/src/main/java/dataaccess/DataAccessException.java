@@ -10,4 +10,8 @@ public class DataAccessException extends ServerException {
     public DataAccessException(int statusCode, String message) {
         super(statusCode, message);
     }
+
+    public DataAccessException(String message) {
+        super(500, message);
+    }
 }

@@ -19,9 +19,10 @@ public class ServiceTests {
 
 
     @BeforeAll
-    static void init(){
+    static void init() throws ServerException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         service = new Service(memoryDataAccess);
+        service.clear();
     }
 
 
@@ -45,8 +46,6 @@ public class ServiceTests {
 
     @Test
     void clear(){
-        assertTrue(true);
-        // First value is the expected value, second is what we're checking
-        assertEquals(true, 1==1);
+        assertDoesNotThrow(()->service.clear());
     }
 }

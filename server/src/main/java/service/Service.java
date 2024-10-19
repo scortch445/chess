@@ -29,13 +29,13 @@ public class Service {
         }
     }
 
-    public void clear(){
+    public void clear() throws ServerException {
         dataAccess.clear();
     }
 
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();
-        return new AuthData(username, authToken);
+        return new AuthData(authToken, username);
     }
 
 }

@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import server.InvalidRequest;
 import server.ServerException;
+import server.UnauthorizedRequest;
 import service.Service;
 
 public class ServiceTests {
@@ -28,6 +29,11 @@ public class ServiceTests {
 
     // DataAccess should use @ParameterizedTest with @ValueSource
 
+    @Test
+    void clear(){
+        assertDoesNotThrow(()->service.clear());
+    }
+
     // Use Run with Coverage to make sure all code is run and tested
     @Test
     void registerSuccess(){
@@ -45,7 +51,25 @@ public class ServiceTests {
     }
 
     @Test
-    void clear(){
-        assertDoesNotThrow(()->service.clear());
+    void loginWrongUsername(){
+        var user = new UserData("Wrong username", "password", null);
+
+        assertThrows(UnauthorizedRequest.class, () -> service.login(user));
     }
+
+    @Test
+    void loginWrongPassword(){
+        registerSuccess();
+        UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
+        assertThrows(UnauthorizedRequest.class,()->service.login(loginDetails));
+    }
+
+    @Test
+    void loginSuccess(){
+        registerSuccess();
+        UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
+        assertEquals(AuthData.class, assertDoesNotThrow(()->service.login(loginDetails)).getClass());
+    }
+
+
 }

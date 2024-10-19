@@ -33,6 +33,10 @@ public class Service {
         dataAccess.clear();
     }
 
+    public AuthData login(UserData userData) throws ServerException {
+        return null;
+    }
+
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();
         return new AuthData(authToken, username);

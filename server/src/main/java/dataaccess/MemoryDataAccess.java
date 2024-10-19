@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class MemoryDataAccess implements DataAccess {
     private ArrayList<UserData> users = new ArrayList<>();
+    private ArrayList<AuthData> authDatas = new ArrayList<>();
 
 
     @Override
@@ -27,6 +28,12 @@ public class MemoryDataAccess implements DataAccess {
 
     @Override
     public void saveAuth(AuthData authData) {
+        authDatas.add(authData);
+    }
 
+    @Override
+    public void clear() {
+        users.clear();
+        authDatas.clear();
     }
 }

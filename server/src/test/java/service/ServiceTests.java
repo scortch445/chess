@@ -36,11 +36,11 @@ public class ServiceTests {
     }
 
     @Test
-    void registerFailure(){
+    void registerAlreadyTaken(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         assertDoesNotThrow(() -> service.register(user));
 
-        assertThrows(InvalidRequest.class, () -> service.register(user));
+        assertThrows(InvalidRequest.class, () -> service.register(user), "Error: already taken");
     }
 
     @Test

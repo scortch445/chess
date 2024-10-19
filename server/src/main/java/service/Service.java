@@ -6,6 +6,8 @@ import server.InvalidRequest;
 import server.ServerException;
 import spark.Request;
 
+import java.util.UUID;
+
 public class Service {
 
     private final DataAccess dataAccess;
@@ -18,10 +20,22 @@ public class Service {
         if(dataAccess.getUser(userData.username())==null){
             dataAccess.saveUser(userData);
 
-            return null;
+            AuthData authData = createAuth(userData.username());
+            dataAccess.saveAuth(authData);
+
+            return authData;
         } else{
             throw new InvalidRequest(403, "Error: already taken");
         }
+    }
+
+    public void clear(){
+        dataAccess.clear();
+    }
+
+    private AuthData createAuth(String username){
+        String authToken = UUID.randomUUID().toString();
+        return new AuthData(username, authToken);
     }
 
 }

@@ -35,8 +35,8 @@ public class Handler {
             AuthData authData = service.register(userData);
             return new Gson().toJson(Map.of("username",authData.username(),"authToken", authData.authToken()));
         } catch(ServerException e){
-            // TODO return the proper status code and json
-            return "error";
+            res.status(e.statusCode);
+            return e.toJson();
         }
 
 

@@ -19,8 +19,9 @@ public class Server {
         Handler handler = new Handler(service);
 
         Spark.delete("/db", handler::clear); // Clear Database
-        Spark.post("/user", handler::registerUser); // Register
+        Spark.post("/user", handler::registerUser);
         Spark.post("/session",handler::login);
+        Spark.delete("/session",handler::logout);
         Spark.get("/game", (req, res) -> ("Hello World")); // List Games
 
         //This line initializes the server and can be removed once you have a functioning endpoint 

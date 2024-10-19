@@ -9,6 +9,7 @@ import service.Service;
 import service.ServiceException;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
 import java.util.Map;
 
@@ -74,5 +75,40 @@ public class Handler {
         }
 
     }
+
+    public String logout(Request req, Response res){
+        String authToken = req.headers("authorization");
+        if(authToken==null){
+            var e = new InvalidRequest();
+            res.status(e.statusCode);
+            return e.toJson();
+        }
+
+        try {
+            service.logout(authToken);
+            return "{}";
+        } catch(ServerException e){
+            res.status(e.statusCode);
+            return e.toJson();
+        } catch(Exception e){
+            var serverException = new ServerException(500,e.getMessage());
+            res.status(serverException.statusCode);
+            return serverException.toJson();
+        }
+
+    }
+
+//    private String handleExceptions(Route route){
+//        try {
+//            return route.handle(req,res).toString();
+//        } catch(ServerException e){
+//            res.status(e.statusCode);
+//            return e.toJson();
+//        } catch(Exception e){
+//            var serverException = new ServerException(500,e.getMessage());
+//            res.status(serverException.statusCode);
+//            return serverException.toJson();
+//        }
+//    }
 
 }

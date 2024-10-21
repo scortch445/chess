@@ -11,6 +11,7 @@ public class MemoryDataAccess implements DataAccess {
     private ArrayList<UserData> users = new ArrayList<>();
     private ArrayList<AuthData> authDatas = new ArrayList<>();
     private ArrayList<GameData> games = new ArrayList<>();
+    int nextGameID = 1;
 
 
     @Override
@@ -54,8 +55,14 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
+    public int getNextGameID() {
+        return nextGameID++;
+    }
+
+    @Override
     public void clear() {
         users.clear();
         authDatas.clear();
+        games.clear();
     }
 }

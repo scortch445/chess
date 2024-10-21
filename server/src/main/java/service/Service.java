@@ -1,4 +1,5 @@
 package service;
+import chess.ChessGame;
 import dataaccess.DataAccess;
 import model.AuthData;
 import model.GameData;
@@ -62,6 +63,15 @@ public class Service {
         } else return null;
 
 
+    }
+
+    public int createGame(String authToken, String gameName) throws UnauthorizedRequest{
+        if(authorized(authToken)){
+            int gameID = dataAccess.getNextGameID();
+            GameData game = new GameData(gameID,null,null,gameName,new ChessGame());
+
+            return gameID;
+        } else return -1;
     }
 
     private AuthData createAuth(String username){

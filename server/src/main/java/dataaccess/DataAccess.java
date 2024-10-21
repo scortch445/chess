@@ -13,6 +13,7 @@ public interface DataAccess {
     void deleteAuth(AuthData authData);
 
     ArrayList<GameData> getGames();
+    int getNextGameID();
 
     void clear();
 }

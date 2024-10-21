@@ -111,5 +111,22 @@ public class ServiceTests {
         assertThrows(UnauthorizedRequest.class, () -> service.getGames("Invalid authToken").size());
     }
 
+    @Test
+    void createGameSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertInstanceOf(Integer.class,
+                assertDoesNotThrow(()->service.createGame(authData.authToken(),"Test Game Name")));
+    }
+
+    @Test
+    void unauthorizedCreateGame(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertThrows(UnauthorizedRequest.class, ()->service.createGame("Invalid Authentication","Test Game Name"));
+    }
+
 
 }

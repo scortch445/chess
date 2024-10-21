@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import server.InvalidRequest;
 import server.ServerException;
@@ -107,7 +108,7 @@ public class Handler {
         }
 
         try {
-            return new Gson().toJson(service.getGames(authToken));
+            return new Gson().toJson(Map.of("games",service.getGames(authToken)));
         } catch(ServerException e){
             res.status(e.statusCode);
             return e.toJson();
@@ -119,6 +120,31 @@ public class Handler {
 
     }
 
+    public String createGame(Request req, Response res){
+        String authToken = req.headers("authorization");
+        String gameName = new Gson().fromJson(req.body(), GameData.class).gameName();
+        if(authToken==null || gameName==null){
+            var e = new InvalidRequest();
+            res.status(e.statusCode);
+            return e.toJson();
+        }
+
+        try {
+            return new Gson().toJson(Map.of("gameID",service.createGame(authToken,gameName)));
+        } catch(ServerException e){
+            res.status(e.statusCode);
+            return e.toJson();
+        } catch(Exception e){
+            var serverException = new ServerException(500,e.getMessage());
+            res.status(serverException.statusCode);
+            return serverException.toJson();
+        }
+    }
+
+
+    // X don't pass in a function, instead, let it pass if it succeeds
+    // Then I can shorten/simplify the repeated co de here
+    // Not gonna work, cuz it needs to try the function
 //    private String handleExceptions(Route route){
 //        try {
 //            return route.handle(req,res).toString();

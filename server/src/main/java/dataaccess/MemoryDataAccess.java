@@ -55,8 +55,32 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public int getNextGameID() {
-        return nextGameID++;
+    public void createGame(GameData gameData) {
+        games.add(gameData);
+    }
+
+    @Override
+    public GameData getGame(int gameID) {
+        for(GameData game : games){
+            if(Objects.equals(game.gameID(), gameID)){
+                return game;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void saveGame(GameData updatedGame) {
+        // First remove the previous gameData
+        for(GameData game : games){
+            if(Objects.equals(game.gameID(), updatedGame.gameID())){
+                games.remove(game);
+                break;
+            }
+        }
+
+        games.add(updatedGame);
+
     }
 
     @Override

@@ -1,13 +1,16 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
@@ -126,6 +129,60 @@ public class ServiceTests {
         AuthData authData = assertDoesNotThrow(() -> service.register(user));
 
         assertThrows(UnauthorizedRequest.class, ()->service.createGame("Invalid Authentication","Test Game Name"));
+    }
+
+    @Test
+    @DisplayName("Join Game Success")
+    void joinGameSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        var gameID = assertDoesNotThrow(() -> service.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData.authToken());
+
+        assertDoesNotThrow(() -> service.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Join Game User Unauthorized")
+    void joinGameUnauthorized(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        var gameID = assertDoesNotThrow(() -> service.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, "Invalid AuthToken");
+
+        assertThrows(UnauthorizedRequest.class, () -> service.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Invalid GameID")
+    void joinGameInvalidID(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        var gameID = assertDoesNotThrow(() -> service.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,13894127, authData.authToken());
+
+        assertThrows(InvalidRequest.class, () -> service.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Join Game Spot Taken")
+    void joinGameSpotTaken(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        var gameID = assertDoesNotThrow(() -> service.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData.authToken());
+
+        assertDoesNotThrow(() -> service.joinGame(joinGameRequest));
+
+        var user2 = new UserData("Test Username2", "Test Password2", "Test Email2");
+        AuthData authData2 = assertDoesNotThrow(() -> service.register(user2));
+        var joinGameRequest2 = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData2.authToken());
+
+        assertThrows(InvalidRequest.class, ()-> service.joinGame(joinGameRequest2));
     }
 
 

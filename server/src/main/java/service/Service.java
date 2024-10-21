@@ -4,6 +4,7 @@ import dataaccess.DataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
@@ -16,9 +17,11 @@ import java.util.UUID;
 public class Service {
 
     private final DataAccess dataAccess;
+    private int nextGameID;
 
     public Service(DataAccess dataAccess){
         this.dataAccess = dataAccess;
+        nextGameID = 1;
     }
 
     public AuthData register(UserData userData) throws InvalidRequest {
@@ -67,11 +70,39 @@ public class Service {
 
     public int createGame(String authToken, String gameName) throws UnauthorizedRequest{
         if(authorized(authToken)){
-            int gameID = dataAccess.getNextGameID();
+            int gameID = getNextGameID();
             GameData game = new GameData(gameID,null,null,gameName,new ChessGame());
+            dataAccess.createGame(game);
 
             return gameID;
         } else return -1;
+    }
+
+    public void joinGame(JoinGameRequest joinGameRequest) throws ServerException{
+        if(authorized(joinGameRequest.authToken())) {
+            GameData game = dataAccess.getGame(joinGameRequest.gameID());
+            if(game == null) throw new InvalidRequest();
+            var user = dataAccess.getAuth(joinGameRequest.authToken());
+            if(joinGameRequest.playerColor() == ChessGame.TeamColor.WHITE) {
+                if(game.whiteUsername()!=null) throw new InvalidRequest(403, "Error: already taken");
+                // Copy the game and update the whiteUsername
+                var newGame = new GameData(game.gameID(),
+                        user.username(),
+                        game.blackUsername(),
+                        game.gameName(),
+                        game.game());
+                dataAccess.saveGame(newGame);
+            } else {
+                if(game.blackUsername()!=null) throw new InvalidRequest(403, "Error: already taken");
+                // Copy the game and update the blackUsername
+                var newGame = new GameData(game.gameID(),
+                        game.whiteUsername(),
+                        user.username(),
+                        game.gameName(),
+                        game.game());
+                dataAccess.saveGame(newGame);
+            }
+        }
     }
 
     private AuthData createAuth(String username){
@@ -85,6 +116,10 @@ public class Service {
         } else {
             return true;
         }
+    }
+
+    private int getNextGameID(){
+        return nextGameID++;
     }
 
 }

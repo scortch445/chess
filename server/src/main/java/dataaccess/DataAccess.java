@@ -13,7 +13,9 @@ public interface DataAccess {
     void deleteAuth(AuthData authData);
 
     ArrayList<GameData> getGames();
-    int getNextGameID();
+    void createGame(GameData gameData);
+    GameData getGame(int gameID);
+    void saveGame(GameData updatedGame);
 
     void clear();
 }

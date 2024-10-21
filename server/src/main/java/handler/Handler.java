@@ -98,6 +98,27 @@ public class Handler {
 
     }
 
+    public String listGames(Request req, Response res){
+        String authToken = req.headers("authorization");
+        if(authToken==null){
+            var e = new InvalidRequest();
+            res.status(e.statusCode);
+            return e.toJson();
+        }
+
+        try {
+            return new Gson().toJson(service.getGames(authToken));
+        } catch(ServerException e){
+            res.status(e.statusCode);
+            return e.toJson();
+        } catch(Exception e){
+            var serverException = new ServerException(500,e.getMessage());
+            res.status(serverException.statusCode);
+            return serverException.toJson();
+        }
+
+    }
+
 //    private String handleExceptions(Route route){
 //        try {
 //            return route.handle(req,res).toString();

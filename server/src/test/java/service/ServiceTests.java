@@ -103,5 +103,13 @@ public class ServiceTests {
         assertEquals(0, assertDoesNotThrow(() -> service.getGames(authData.authToken()).size()));
     }
 
+    @Test
+    void unauthorizedListGames(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertThrows(UnauthorizedRequest.class, () -> service.getGames("Invalid authToken").size());
+    }
+
 
 }

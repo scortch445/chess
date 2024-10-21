@@ -1,12 +1,14 @@
 package service;
 import dataaccess.DataAccess;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
 import spark.Request;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,17 +50,31 @@ public class Service {
     }
 
     public void logout(String authToken) throws UnauthorizedRequest {
-        AuthData authData = dataAccess.getAuth(authToken);
-        if(authData==null){
-            throw new UnauthorizedRequest();
-        } else {
+        if(authorized(authToken)){
+            AuthData authData = dataAccess.getAuth(authToken);
             dataAccess.deleteAuth(authData);
         }
+    }
+
+    public ArrayList<GameData> getGames(String authToken) throws  UnauthorizedRequest {
+        if(authorized(authToken)){
+            return dataAccess.getGames();
+        } else return null;
+
+
     }
 
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();
         return new AuthData(authToken, username);
+    }
+
+    private boolean authorized(String authToken) throws UnauthorizedRequest{
+        if(dataAccess.getAuth(authToken)==null){
+            throw new UnauthorizedRequest();
+        } else {
+            return true;
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Objects;
 public class MemoryDataAccess implements DataAccess {
     private ArrayList<UserData> users = new ArrayList<>();
     private ArrayList<AuthData> authDatas = new ArrayList<>();
+    private ArrayList<GameData> games = new ArrayList<>();
 
 
     @Override
@@ -44,6 +46,11 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void deleteAuth(AuthData authData) {
         authDatas.remove(authData);
+    }
+
+    @Override
+    public ArrayList<GameData> getGames() {
+        return games;
     }
 
     @Override

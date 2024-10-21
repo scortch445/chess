@@ -95,5 +95,13 @@ public class ServiceTests {
         assertThrows(UnauthorizedRequest.class, ()->service.logout("Wrong authToken"));
     }
 
+    @Test
+    void listGamesEmpty(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> service.register(user));
+
+        assertEquals(0, assertDoesNotThrow(() -> service.getGames(authData.authToken()).size()));
+    }
+
 
 }

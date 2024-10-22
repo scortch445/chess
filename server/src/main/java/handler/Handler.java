@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import service.Service;
@@ -131,6 +132,31 @@ public class Handler {
 
         try {
             return new Gson().toJson(Map.of("gameID",service.createGame(authToken,gameName)));
+        } catch(ServerException e){
+            res.status(e.statusCode);
+            return e.toJson();
+        } catch(Exception e){
+            var serverException = new ServerException(500,e.getMessage());
+            res.status(serverException.statusCode);
+            return serverException.toJson();
+        }
+    }
+
+    public String joinGame(Request req, Response res){
+        // TODO Fix the joinGameRequest to also have an authToken
+        JoinGameRequest joinGameRequestWithoutAuth = new Gson().fromJson(req.body(),JoinGameRequest.class);
+        String authToken = req.headers("authorization");
+        JoinGameRequest joinGameRequest = new JoinGameRequest(joinGameRequestWithoutAuth.playerColor(), joinGameRequestWithoutAuth.gameID(), authToken);
+
+        if(joinGameRequest.authToken()==null || joinGameRequest.gameID()<=0 || joinGameRequest.playerColor() == null){
+            var e = new InvalidRequest();
+            res.status(e.statusCode);
+            return e.toJson();
+        }
+
+        try {
+            service.joinGame(joinGameRequest);
+            return "{}";
         } catch(ServerException e){
             res.status(e.statusCode);
             return e.toJson();

@@ -143,10 +143,12 @@ public class Handler {
     }
 
     public String joinGame(Request req, Response res){
-        // TODO Fix the joinGameRequest to also have an authToken
+        // clean up code in future
         JoinGameRequest joinGameRequestWithoutAuth = new Gson().fromJson(req.body(),JoinGameRequest.class);
         String authToken = req.headers("authorization");
-        JoinGameRequest joinGameRequest = new JoinGameRequest(joinGameRequestWithoutAuth.playerColor(), joinGameRequestWithoutAuth.gameID(), authToken);
+        JoinGameRequest joinGameRequest =
+                new JoinGameRequest(
+                        joinGameRequestWithoutAuth.playerColor(), joinGameRequestWithoutAuth.gameID(), authToken);
 
         if(joinGameRequest.authToken()==null || joinGameRequest.gameID()<=0 || joinGameRequest.playerColor() == null){
             var e = new InvalidRequest();
@@ -171,17 +173,5 @@ public class Handler {
     // X don't pass in a function, instead, let it pass if it succeeds
     // Then I can shorten/simplify the repeated co de here
     // Not gonna work, cuz it needs to try the function
-//    private String handleExceptions(Route route){
-//        try {
-//            return route.handle(req,res).toString();
-//        } catch(ServerException e){
-//            res.status(e.statusCode);
-//            return e.toJson();
-//        } catch(Exception e){
-//            var serverException = new ServerException(500,e.getMessage());
-//            res.status(serverException.statusCode);
-//            return serverException.toJson();
-//        }
-//    }
 
 }

@@ -27,8 +27,12 @@ public class ChessPosition {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessPosition that = (ChessPosition) o;
         return row == that.row && col == that.col;
     }
@@ -57,15 +61,15 @@ public class ChessPosition {
     /**
      * Change the Row
      */
-    public void setRow(int _row) {
-        this.row=_row;
+    public void setRow(int row) {
+        this.row=row;
     }
 
     /**
      * Change the Column
      */
-    public void setColumn(int _col) {
-        this.col = _col;
+    public void setColumn(int col) {
+        this.col = col;
     }
 
     public void offset(int offsetCol, int offSetRow){

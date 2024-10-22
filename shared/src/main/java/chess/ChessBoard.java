@@ -12,7 +12,7 @@ public class ChessBoard {
 
     // boardSpots[row][col]
     private ChessPiece[][] piecesOnBoard = new ChessPiece[8][8];
-    private static final ChessPiece.PieceType[] initialRowSetup = {
+    private static final ChessPiece.PieceType[] INITIAL_ROW_SETUP = {
             ChessPiece.PieceType.ROOK,
             ChessPiece.PieceType.KNIGHT,
             ChessPiece.PieceType.BISHOP,
@@ -32,8 +32,12 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(piecesOnBoard, that.piecesOnBoard);
     }
@@ -113,7 +117,7 @@ public class ChessBoard {
 
         // First Row
         for(int i = 0; i<8; i++){
-            piecesOnBoard[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, initialRowSetup[i]);
+            piecesOnBoard[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, INITIAL_ROW_SETUP[i]);
         }
 
         // Pawn Row
@@ -125,7 +129,7 @@ public class ChessBoard {
 
         // Back Row
         for(int i = 0; i<8; i++){
-            piecesOnBoard[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, initialRowSetup[i]);
+            piecesOnBoard[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, INITIAL_ROW_SETUP[i]);
         }
 
         // Pawn Row

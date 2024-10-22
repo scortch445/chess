@@ -63,7 +63,9 @@ public class Service {
     public ArrayList<GameData> getGames(String authToken) throws  UnauthorizedRequest {
         if(authorized(authToken)){
             return dataAccess.getGames();
-        } else return null;
+        } else {
+            return null;
+        }
 
 
     }
@@ -75,16 +77,22 @@ public class Service {
             dataAccess.createGame(game);
 
             return gameID;
-        } else return -1;
+        } else {
+            return -1;
+        }
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws ServerException{
         if(authorized(joinGameRequest.authToken())) {
             GameData game = dataAccess.getGame(joinGameRequest.gameID());
-            if(game == null) throw new InvalidRequest();
+            if(game == null) {
+                throw new InvalidRequest();
+            }
             var user = dataAccess.getAuth(joinGameRequest.authToken());
             if(joinGameRequest.playerColor() == ChessGame.TeamColor.WHITE) {
-                if(game.whiteUsername()!=null) throw new InvalidRequest(403, "Error: already taken");
+                if(game.whiteUsername()!=null) {
+                    throw new InvalidRequest(403, "Error: already taken");
+                }
                 // Copy the game and update the whiteUsername
                 var newGame = new GameData(game.gameID(),
                         user.username(),
@@ -93,7 +101,9 @@ public class Service {
                         game.game());
                 dataAccess.saveGame(newGame);
             } else {
-                if(game.blackUsername()!=null) throw new InvalidRequest(403, "Error: already taken");
+                if(game.blackUsername()!=null) {
+                    throw new InvalidRequest(403, "Error: already taken");
+                }
                 // Copy the game and update the blackUsername
                 var newGame = new GameData(game.gameID(),
                         game.whiteUsername(),

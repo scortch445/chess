@@ -33,6 +33,7 @@ public class DataAccessTest {
     // DataAccess should use @ParameterizedTest with @ValueSource
 
     @Test
+    @DisplayName("Clear Database")
     void clear(){
         assertDoesNotThrow(()->dataAccess.clear());
     }
@@ -42,6 +43,22 @@ public class DataAccessTest {
     void saveUser(){
         UserData user = new UserData("test username", "test-password","test@test.com");
         assertDoesNotThrow(()->dataAccess.saveUser(user));
+    }
+
+    @Test
+    @DisplayName("Get User Failure")
+    void getUserBeforeCreated(){
+        assertNull(dataAccess.getUser("ThisUserDoesn'tExist"));
+    }
+
+    @Test
+    @DisplayName("Get User Success")
+    void getUser(){
+        UserData user = new UserData("test username", "test-password","test@test.com");
+        assertDoesNotThrow(()->dataAccess.saveUser(user));
+
+        UserData userReturned = assertInstanceOf(UserData.class, dataAccess.getUser("test username"));
+        assertEquals(user, userReturned);
     }
 
 

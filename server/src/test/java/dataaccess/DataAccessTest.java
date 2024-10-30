@@ -1,10 +1,48 @@
 package dataaccess;
 
+import chess.ChessGame;
+import model.AuthData;
+import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import request.JoinGameRequest;
+import server.InvalidRequest;
+import server.ServerException;
+import server.UnauthorizedRequest;
+import service.Service;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTest {
-    @Test
-    public void registerUser(){
 
+    static SqlDataAccess dataAccess;
+    @BeforeAll
+    static void init() throws ServerException {
+        dataAccess = new SqlDataAccess();
+        dataAccess.clear();
     }
+
+    @BeforeEach
+    void setup() throws ServerException{
+        dataAccess.clear();
+    }
+
+
+    // DataAccess should use @ParameterizedTest with @ValueSource
+
+    @Test
+    void clear(){
+        assertDoesNotThrow(()->dataAccess.clear());
+    }
+
+    @Test
+    @DisplayName("Save User")
+    void saveUser(){
+        UserData user = new UserData("test username", "test-password","test@test.com");
+        assertDoesNotThrow(()->dataAccess.saveUser(user));
+    }
+
+
 }

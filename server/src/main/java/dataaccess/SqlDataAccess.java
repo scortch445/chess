@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.ServerException;
 
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ public class SqlDataAccess implements DataAccess {
     @Override
     public void saveUser(UserData userData) throws DataAccessException{
         var statement = "INSERT INTO UserData (username,password,email) VALUES (?,?,?)";
-        executeUpdate(statement, userData.username(), userData.password(), userData.email());
+        String hashedPassword = BCrypt.hashpw(userData.password(),BCrypt.gensalt());
+        executeUpdate(statement, userData.username(), hashedPassword, userData.email());
     }
 
     @Override

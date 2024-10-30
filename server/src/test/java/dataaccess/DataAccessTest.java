@@ -58,7 +58,20 @@ public class DataAccessTest {
         assertDoesNotThrow(()->dataAccess.saveUser(user));
 
         UserData userReturned = assertInstanceOf(UserData.class, assertDoesNotThrow(()->dataAccess.getUser("test username")));
-        assertEquals(user, userReturned);
+        assertEquals(user.username(), userReturned.username());
+        assertEquals(user.email(), userReturned.email());
+    }
+
+    @Test
+    @DisplayName("Check Hashed Password")
+    void getUserEncryptedPassword(){
+        UserData user = new UserData("test username", "test-password","test@test.com");
+        assertDoesNotThrow(()->dataAccess.saveUser(user));
+
+        UserData userReturned = assertInstanceOf(UserData.class, assertDoesNotThrow(()->dataAccess.getUser("test username")));
+        assertEquals(user.username(), userReturned.username());
+        assertEquals(user.email(), userReturned.email());
+        assertNotEquals(user.password(),userReturned.password());
     }
 
 

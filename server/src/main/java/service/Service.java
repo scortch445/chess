@@ -44,6 +44,7 @@ public class Service {
     public AuthData login(UserData userData) throws ServerException {
 
         UserData usr = dataAccess.getUser(userData.username());
+//        TODO edit this to check encrypted password
         if(usr==null|| !Objects.equals(usr.password(), userData.password())){
             throw new UnauthorizedRequest();
         } else{

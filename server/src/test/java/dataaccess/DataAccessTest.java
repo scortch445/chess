@@ -74,5 +74,23 @@ public class DataAccessTest {
         assertNotEquals(user.password(),userReturned.password());
     }
 
+    @Test
+    @DisplayName("Auth Data Null")
+    void getAuthFailure(){
+        assertNull(dataAccess.getAuth("This Auth Token Doesn't Exist!"));
+    }
+
+    @Test
+    @DisplayName("getAuth Success")
+    void getAuth(){
+        AuthData authData = new AuthData("testAuthToken","test-username");
+        assertDoesNotThrow(()->dataAccess.saveAuth(authData));
+
+        AuthData authDataReturned = assertInstanceOf(AuthData.class,
+                assertDoesNotThrow(()->dataAccess.getAuth("testAuthToken")));
+
+        assertEquals(authData.authToken(),authDataReturned.authToken());
+    }
+
 
 }

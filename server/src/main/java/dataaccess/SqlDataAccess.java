@@ -18,13 +18,28 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public UserData getUser(String username) {
-        return null;
+    public UserData getUser(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM UserData WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    } else{
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     @Override
-    public void saveUser(UserData userData) {
-
+    public void saveUser(UserData userData) throws DataAccessException{
+        var statement = "INSERT INTO UserData (username,password,email) VALUES (?,?,?)";
+        executeUpdate(statement, userData.username(), userData.password(), userData.email());
     }
 
     @Override
@@ -63,8 +78,20 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE UserData";
+        executeUpdate(statement);
+        statement = "TRUNCATE AuthData";
+        executeUpdate(statement);
+        statement = "TRUNCATE GameData";
+        executeUpdate(statement);
+    }
 
+    private UserData readUser(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var password = rs.getString("password");
+        var email = rs.getString("email");
+        return new UserData(username,password,email);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

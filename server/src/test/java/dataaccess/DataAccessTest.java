@@ -48,7 +48,7 @@ public class DataAccessTest {
     @Test
     @DisplayName("Get User Failure")
     void getUserBeforeCreated(){
-        assertNull(dataAccess.getUser("ThisUserDoesn'tExist"));
+        assertNull(assertDoesNotThrow(() -> dataAccess.getUser("ThisUserDoesn'tExist")));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class DataAccessTest {
         UserData user = new UserData("test username", "test-password","test@test.com");
         assertDoesNotThrow(()->dataAccess.saveUser(user));
 
-        UserData userReturned = assertInstanceOf(UserData.class, dataAccess.getUser("test username"));
+        UserData userReturned = assertInstanceOf(UserData.class, assertDoesNotThrow(()->dataAccess.getUser("test username")));
         assertEquals(user, userReturned);
     }
 

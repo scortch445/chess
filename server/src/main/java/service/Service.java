@@ -24,7 +24,7 @@ public class Service {
         nextGameID = 1;
     }
 
-    public AuthData register(UserData userData) throws InvalidRequest {
+    public AuthData register(UserData userData) throws ServerException {
         if(dataAccess.getUser(userData.username())==null){
             dataAccess.saveUser(userData);
 

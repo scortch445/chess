@@ -107,5 +107,11 @@ public class DataAccessTest {
         assertNull(assertDoesNotThrow(()->dataAccess.getAuth(authData.authToken())));
     }
 
+    @Test
+    @DisplayName("Get Empty List of Games")
+    void getEmptyGames(){
+        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+    }
+
 
 }

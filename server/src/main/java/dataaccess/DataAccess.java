@@ -12,7 +12,7 @@ public interface DataAccess {
     void saveAuth(AuthData authData) throws DataAccessException;
     void deleteAuth(AuthData authData) throws DataAccessException;
 
-    ArrayList<GameData> getGames();
+    ArrayList<GameData> getGames() throws DataAccessException;
     void createGame(GameData gameData);
     GameData getGame(int gameID);
     void saveGame(GameData updatedGame);

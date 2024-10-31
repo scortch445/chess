@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -76,8 +78,21 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public ArrayList<GameData> getGames() {
-        return null;
+    public ArrayList<GameData> getGames() throws DataAccessException {
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM GameData";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGameData(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return (result.isEmpty()) ? null : result;
     }
 
     @Override
@@ -116,6 +131,16 @@ public class SqlDataAccess implements DataAccess {
         var authToken = rs.getString("authToken");
         var username = rs.getString("username");
         return new AuthData(authToken,username);
+    }
+
+    private GameData readGameData(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var json = rs.getString("game");
+        var game = new Gson().fromJson(json, ChessGame.class);
+        return new GameData(id,whiteUsername,blackUsername,gameName,game);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

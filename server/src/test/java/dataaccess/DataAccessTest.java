@@ -92,5 +92,20 @@ public class DataAccessTest {
         assertEquals(authData.authToken(),authDataReturned.authToken());
     }
 
+    @Test
+    @DisplayName("Delete Auth Success")
+    void deleteAuth(){
+        AuthData authData = new AuthData("testAuthToken","test-username");
+        assertDoesNotThrow(()->dataAccess.saveAuth(authData));
+
+        AuthData authDataReturned = assertInstanceOf(AuthData.class,
+                assertDoesNotThrow(()->dataAccess.getAuth("testAuthToken")));
+
+        assertEquals(authData.authToken(),authDataReturned.authToken());
+
+        assertDoesNotThrow(()->dataAccess.deleteAuth(authData));
+        assertNull(assertDoesNotThrow(()->dataAccess.getAuth(authData.authToken())));
+    }
+
 
 }

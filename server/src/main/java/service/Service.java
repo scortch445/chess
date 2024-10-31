@@ -54,14 +54,14 @@ public class Service {
         }
     }
 
-    public void logout(String authToken) throws UnauthorizedRequest {
+    public void logout(String authToken) throws ServerException {
         if(authorized(authToken)){
             AuthData authData = dataAccess.getAuth(authToken);
             dataAccess.deleteAuth(authData);
         }
     }
 
-    public ArrayList<GameData> getGames(String authToken) throws  UnauthorizedRequest {
+    public ArrayList<GameData> getGames(String authToken) throws  ServerException {
         if(authorized(authToken)){
             return dataAccess.getGames();
         } else {
@@ -71,7 +71,7 @@ public class Service {
 
     }
 
-    public int createGame(String authToken, String gameName) throws UnauthorizedRequest{
+    public int createGame(String authToken, String gameName) throws ServerException{
         if(authorized(authToken)){
             int gameID = getNextGameID();
             GameData game = new GameData(gameID,null,null,gameName,new ChessGame());
@@ -121,7 +121,7 @@ public class Service {
         return new AuthData(authToken, username);
     }
 
-    private boolean authorized(String authToken) throws UnauthorizedRequest{
+    private boolean authorized(String authToken) throws ServerException{
         if(dataAccess.getAuth(authToken)==null){
             throw new UnauthorizedRequest();
         } else {

@@ -8,8 +8,8 @@ public interface DataAccess {
     UserData getUser(String username) throws DataAccessException;
     void saveUser(UserData userData) throws DataAccessException;
 
-    AuthData getAuth(String authToken);
-    void saveAuth(AuthData authData);
+    AuthData getAuth(String authToken) throws DataAccessException;
+    void saveAuth(AuthData authData) throws DataAccessException;
     void deleteAuth(AuthData authData);
 
     ArrayList<GameData> getGames();

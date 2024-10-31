@@ -77,7 +77,7 @@ public class DataAccessTest {
     @Test
     @DisplayName("Auth Data Null")
     void getAuthFailure(){
-        assertNull(dataAccess.getAuth("This Auth Token Doesn't Exist!"));
+        assertNull(assertDoesNotThrow(()->dataAccess.getAuth("This Auth Token Doesn't Exist!")));
     }
 
     @Test

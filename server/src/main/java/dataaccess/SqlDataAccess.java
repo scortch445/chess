@@ -45,13 +45,28 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public AuthData getAuth(String authToken) {
-        return null;
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM AuthData WHERE authData=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuthData(rs);
+                    } else{
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     @Override
-    public void saveAuth(AuthData authData) {
-
+    public void saveAuth(AuthData authData) throws DataAccessException {
+        var statement = "INSERT INTO AuthData (authToken,username)";
+        executeUpdate(statement,authData.authToken(),authData.username());
     }
 
     @Override
@@ -94,6 +109,12 @@ public class SqlDataAccess implements DataAccess {
         var password = rs.getString("password");
         var email = rs.getString("email");
         return new UserData(username,password,email);
+    }
+
+    private AuthData readAuthData(ResultSet rs) throws SQLException {
+        var authToken = rs.getString("authToken");
+        var username = rs.getString("username");
+        return new AuthData(authToken,username);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

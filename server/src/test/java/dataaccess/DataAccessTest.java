@@ -140,5 +140,29 @@ public class DataAccessTest {
         assertEquals(3, assertDoesNotThrow(()->dataAccess.getGames()).size());
     }
 
+    @Test
+    @DisplayName("Get specific games")
+    void getSpecificGame(){
+        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+
+        GameData gameData = new GameData(
+                1,"testUsername","testUsername2",
+                "testGameName", new ChessGame());
+        GameData gameData2 = new GameData(
+                2,"testUsername3","testUsername4",
+                "testGameName2", new ChessGame());
+        GameData gameData3 = new GameData(
+                3,"testUsername5","testUsername6",
+                "testGameName3", new ChessGame());
+
+        assertDoesNotThrow(()->dataAccess.createGame(gameData));
+        assertDoesNotThrow(()->dataAccess.createGame(gameData2));
+        assertDoesNotThrow(()->dataAccess.createGame(gameData3));
+
+        assertEquals(gameData,assertDoesNotThrow(()->dataAccess.getGame(1)));
+        assertEquals(gameData2,assertDoesNotThrow(()->dataAccess.getGame(2)));
+        assertEquals(gameData3,assertDoesNotThrow(()->dataAccess.getGame(3)));
+    }
+
 
 }

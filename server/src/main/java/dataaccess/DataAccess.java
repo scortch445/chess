@@ -15,7 +15,7 @@ public interface DataAccess {
     ArrayList<GameData> getGames() throws DataAccessException;
     void createGame(GameData gameData) throws DataAccessException;
     GameData getGame(int gameID) throws DataAccessException;
-    void saveGame(GameData updatedGame);
+    void saveGame(GameData updatedGame) throws DataAccessException;
 
     void clear() throws DataAccessException;
 }

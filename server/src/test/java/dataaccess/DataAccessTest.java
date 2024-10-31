@@ -175,7 +175,7 @@ public class DataAccessTest {
         ChessGame game = new ChessGame();
 
         GameData gameData = new GameData(
-                1,"testUsername","testUsername2",
+                1,null,null,
                 "testGameName", new ChessGame());
 
         assertDoesNotThrow(()->dataAccess.createGame(gameData));
@@ -183,7 +183,7 @@ public class DataAccessTest {
         var move = new ChessMove(new ChessPosition(2,1), new ChessPosition(3,1), null);
         assertDoesNotThrow(()->game.makeMove(move));
 
-        GameData updatedGame = new GameData(1,"testUsername","testUsername2",
+        GameData updatedGame = new GameData(1,null,"testUsername2",
                 "testGameName",   game);
 
         assertDoesNotThrow(()->dataAccess.saveGame(updatedGame));

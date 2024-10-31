@@ -97,9 +97,25 @@ public class SqlDataAccess implements DataAccess {
 
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
-        var statement = "INSERT INTO GameData (id,whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?,?)";
-        var json = new Gson().toJson(gameData.game());
-        executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.blackUsername(),gameData.gameName(),json);
+        var whiteUsername = gameData.whiteUsername();
+        var blackUsername = gameData.blackUsername();
+        if(blackUsername==null && whiteUsername==null){
+            var statement = "INSERT INTO GameData (id,gameName,game) VALUES (?,?,?)";
+            var json = new Gson().toJson(gameData.game());
+            executeUpdate(statement,gameData.gameID(),gameData.gameName(),json);
+        } else if(blackUsername==null){
+            var statement = "INSERT INTO GameData (id,whiteUsername,gameName,game) VALUES (?,?,?,?)";
+            var json = new Gson().toJson(gameData.game());
+            executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.gameName(),json);
+        } else if(whiteUsername==null){
+            var statement = "INSERT INTO GameData (id,blackUsername,gameName,game) VALUES (?,?,?,?)";
+            var json = new Gson().toJson(gameData.game());
+            executeUpdate(statement,gameData.gameID(),gameData.blackUsername(),gameData.gameName(),json);
+        } else{
+            var statement = "INSERT INTO GameData (id,whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?,?)";
+            var json = new Gson().toJson(gameData.game());
+            executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.blackUsername(),gameData.gameName(),json);
+        }
     }
 
     @Override
@@ -122,8 +138,26 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public void saveGame(GameData updatedGame) {
-
+    public void saveGame(GameData updatedGame) throws DataAccessException{
+        var whiteUsername = updatedGame.whiteUsername();
+        var blackUsername = updatedGame.blackUsername();
+        if(whiteUsername==null && blackUsername==null){
+            var statement = "UPDATE GameData SET game=? WHERE id=?";
+            var json = new Gson().toJson(updatedGame.game());
+            executeUpdate(statement,json,updatedGame.gameID());
+        } else if(whiteUsername==null){
+            var statement = "UPDATE GameData SET blackUsername=?, game=? WHERE id=?";
+            var json = new Gson().toJson(updatedGame.game());
+            executeUpdate(statement,updatedGame.blackUsername(),json,updatedGame.gameID());
+        } else if(blackUsername==null) {
+            var statement = "UPDATE GameData SET whiteUsername=?, game=? WHERE id=?";
+            var json = new Gson().toJson(updatedGame.game());
+            executeUpdate(statement, updatedGame.whiteUsername(), json, updatedGame.gameID());
+        } else{
+            var statement = "UPDATE GameData SET whiteUsername=?, blackUsername=?, game=? WHERE id=?";
+            var json = new Gson().toJson(updatedGame.game());
+            executeUpdate(statement,updatedGame.whiteUsername(),updatedGame.blackUsername(),json,updatedGame.gameID());
+        }
     }
 
     @Override
@@ -164,7 +198,9 @@ public class SqlDataAccess implements DataAccess {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) {
+                    if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    } else if (param instanceof String p) {
                         ps.setString(i + 1, p);
                     }
                     else if (param instanceof Integer p) {
@@ -172,9 +208,6 @@ public class SqlDataAccess implements DataAccess {
                     }
                     else if (param instanceof Object o) {
                         ps.setString(i + 1, o.toString());
-                    }
-                    else if (param == null) {
-                        ps.setNull(i + 1, NULL);
                     }
                 }
                 ps.executeUpdate();
@@ -205,8 +238,8 @@ public class SqlDataAccess implements DataAccess {
             """
             CREATE TABLE IF NOT EXISTS  GameData (
               `id` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`)

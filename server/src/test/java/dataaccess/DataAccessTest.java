@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -13,6 +15,8 @@ import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
 import service.Service;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -162,6 +166,30 @@ public class DataAccessTest {
         assertEquals(gameData,assertDoesNotThrow(()->dataAccess.getGame(1)));
         assertEquals(gameData2,assertDoesNotThrow(()->dataAccess.getGame(2)));
         assertEquals(gameData3,assertDoesNotThrow(()->dataAccess.getGame(3)));
+    }
+
+    @Test
+    @DisplayName("Update Game")
+    void updateGame(){
+        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+        ChessGame game = new ChessGame();
+
+        GameData gameData = new GameData(
+                1,"testUsername","testUsername2",
+                "testGameName", new ChessGame());
+
+        assertDoesNotThrow(()->dataAccess.createGame(gameData));
+
+        var move = new ChessMove(new ChessPosition(2,1), new ChessPosition(3,1), null);
+        assertDoesNotThrow(()->game.makeMove(move));
+
+        GameData updatedGame = new GameData(1,"testUsername","testUsername2",
+                "testGameName",   game);
+
+        assertDoesNotThrow(()->dataAccess.saveGame(updatedGame));
+
+        var returnedGame = assertDoesNotThrow(()->dataAccess.getGame(1));
+        assertEquals(updatedGame,returnedGame);
     }
 
 

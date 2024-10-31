@@ -47,7 +47,7 @@ public class SqlDataAccess implements DataAccess {
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM AuthData WHERE authData=?";
+            var statement = "SELECT authToken, username FROM AuthData WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
@@ -65,7 +65,7 @@ public class SqlDataAccess implements DataAccess {
 
     @Override
     public void saveAuth(AuthData authData) throws DataAccessException {
-        var statement = "INSERT INTO AuthData (authToken,username)";
+        var statement = "INSERT INTO AuthData (authToken,username) VALUES (?,?)";
         executeUpdate(statement,authData.authToken(),authData.username());
     }
 

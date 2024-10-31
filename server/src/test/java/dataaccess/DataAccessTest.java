@@ -115,13 +115,13 @@ public class DataAccessTest {
     @Test
     @DisplayName("Get Empty List of Games")
     void getEmptyGames(){
-        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+        assertEquals(0,assertDoesNotThrow(()->dataAccess.getGames()).size());
     }
 
     @Test
     @DisplayName("Get List of created Games")
     void createAndListGames(){
-        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+        assertEquals(0,assertDoesNotThrow(()->dataAccess.getGames()).size());
 
         GameData gameData = new GameData(
                 1,"testUsername","testUsername2",
@@ -147,7 +147,7 @@ public class DataAccessTest {
     @Test
     @DisplayName("Get specific games")
     void getSpecificGame(){
-        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+        assertEquals(0,assertDoesNotThrow(()->dataAccess.getGames()).size());
 
         GameData gameData = new GameData(
                 1,"testUsername","testUsername2",
@@ -171,7 +171,7 @@ public class DataAccessTest {
     @Test
     @DisplayName("Update Game")
     void updateGame(){
-        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+        assertEquals(0,assertDoesNotThrow(()->dataAccess.getGames()).size());
         ChessGame game = new ChessGame();
 
         GameData gameData = new GameData(

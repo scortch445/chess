@@ -4,6 +4,7 @@ import dataaccess.DataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
@@ -44,8 +45,7 @@ public class Service {
     public AuthData login(UserData userData) throws ServerException {
 
         UserData usr = dataAccess.getUser(userData.username());
-//        TODO edit this to check encrypted password
-        if(usr==null|| !Objects.equals(usr.password(), userData.password())){
+        if(usr==null|| !BCrypt.checkpw(userData.password(),usr.password())){
             throw new UnauthorizedRequest();
         } else{
             AuthData authData = createAuth(usr.username());

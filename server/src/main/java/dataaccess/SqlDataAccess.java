@@ -92,7 +92,7 @@ public class SqlDataAccess implements DataAccess {
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return (result.isEmpty()) ? null : result;
+        return result;
     }
 
     @Override

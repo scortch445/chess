@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.MemoryDataAccess;
+import dataaccess.SqlDataAccess;
 import handler.Handler;
 import spark.*;
 import service.Service;
@@ -14,8 +15,14 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
 
-        MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
-        Service service = new Service(memoryDataAccess);
+        SqlDataAccess dataAccess = null;
+        try {
+            dataAccess = new SqlDataAccess();
+        } catch (ServerException e) {
+            throw new RuntimeException(e);
+        }
+
+        Service service = new Service(dataAccess);
         Handler handler = new Handler(service);
 
         Spark.delete("/db", handler::clear); // Clear Database

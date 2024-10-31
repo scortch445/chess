@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.MemoryDataAccess;
+import dataaccess.SqlDataAccess;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,8 +25,8 @@ public class ServiceTests {
 
     @BeforeAll
     static void init() throws ServerException {
-        MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
-        service = new Service(memoryDataAccess);
+        var dataAccess = new SqlDataAccess();
+        service = new Service(dataAccess);
         service.clear();
     }
 

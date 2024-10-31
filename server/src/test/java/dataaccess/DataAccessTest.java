@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,6 +112,32 @@ public class DataAccessTest {
     @DisplayName("Get Empty List of Games")
     void getEmptyGames(){
         assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+    }
+
+    @Test
+    @DisplayName("Get List of created Games")
+    void createAndListGames(){
+        assertNull(assertDoesNotThrow(()->dataAccess.getGames()));
+
+        GameData gameData = new GameData(
+                1,"testUsername","testUsername2",
+                "testGameName", new ChessGame());
+
+        assertDoesNotThrow(()->dataAccess.createGame(gameData));
+
+        assertNotNull(assertDoesNotThrow(()->dataAccess.getGames()));
+
+        GameData gameData2 = new GameData(
+                2,"testUsername3","testUsername4",
+                "testGameName2", new ChessGame());
+        GameData gameData3 = new GameData(
+                3,"testUsername5","testUsername6",
+                "testGameName3", new ChessGame());
+
+        assertDoesNotThrow(()->dataAccess.createGame(gameData2));
+        assertDoesNotThrow(()->dataAccess.createGame(gameData3));
+
+        assertEquals(3, assertDoesNotThrow(()->dataAccess.getGames()).size());
     }
 
 

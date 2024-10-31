@@ -96,8 +96,10 @@ public class SqlDataAccess implements DataAccess {
     }
 
     @Override
-    public void createGame(GameData gameData) {
-
+    public void createGame(GameData gameData) throws DataAccessException {
+        var statement = "INSERT INTO GameData (id,whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?,?)";
+        var json = new Gson().toJson(gameData.game());
+        executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.blackUsername(),gameData.gameName(),json);
     }
 
     @Override

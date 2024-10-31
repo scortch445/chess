@@ -97,25 +97,9 @@ public class SqlDataAccess implements DataAccess {
 
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
-        var whiteUsername = gameData.whiteUsername();
-        var blackUsername = gameData.blackUsername();
-        if(blackUsername==null && whiteUsername==null){
-            var statement = "INSERT INTO GameData (id,gameName,game) VALUES (?,?,?)";
-            var json = new Gson().toJson(gameData.game());
-            executeUpdate(statement,gameData.gameID(),gameData.gameName(),json);
-        } else if(blackUsername==null){
-            var statement = "INSERT INTO GameData (id,whiteUsername,gameName,game) VALUES (?,?,?,?)";
-            var json = new Gson().toJson(gameData.game());
-            executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.gameName(),json);
-        } else if(whiteUsername==null){
-            var statement = "INSERT INTO GameData (id,blackUsername,gameName,game) VALUES (?,?,?,?)";
-            var json = new Gson().toJson(gameData.game());
-            executeUpdate(statement,gameData.gameID(),gameData.blackUsername(),gameData.gameName(),json);
-        } else{
-            var statement = "INSERT INTO GameData (id,whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?,?)";
-            var json = new Gson().toJson(gameData.game());
-            executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.blackUsername(),gameData.gameName(),json);
-        }
+        var statement = "INSERT INTO GameData (id,whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?,?)";
+        var json = new Gson().toJson(gameData.game());
+        executeUpdate(statement,gameData.gameID(),gameData.whiteUsername(),gameData.blackUsername(),gameData.gameName(),json);
     }
 
     @Override
@@ -139,25 +123,9 @@ public class SqlDataAccess implements DataAccess {
 
     @Override
     public void saveGame(GameData updatedGame) throws DataAccessException{
-        var whiteUsername = updatedGame.whiteUsername();
-        var blackUsername = updatedGame.blackUsername();
-        if(whiteUsername==null && blackUsername==null){
-            var statement = "UPDATE GameData SET game=? WHERE id=?";
-            var json = new Gson().toJson(updatedGame.game());
-            executeUpdate(statement,json,updatedGame.gameID());
-        } else if(whiteUsername==null){
-            var statement = "UPDATE GameData SET blackUsername=?, game=? WHERE id=?";
-            var json = new Gson().toJson(updatedGame.game());
-            executeUpdate(statement,updatedGame.blackUsername(),json,updatedGame.gameID());
-        } else if(blackUsername==null) {
-            var statement = "UPDATE GameData SET whiteUsername=?, game=? WHERE id=?";
-            var json = new Gson().toJson(updatedGame.game());
-            executeUpdate(statement, updatedGame.whiteUsername(), json, updatedGame.gameID());
-        } else{
-            var statement = "UPDATE GameData SET whiteUsername=?, blackUsername=?, game=? WHERE id=?";
-            var json = new Gson().toJson(updatedGame.game());
-            executeUpdate(statement,updatedGame.whiteUsername(),updatedGame.blackUsername(),json,updatedGame.gameID());
-        }
+        var statement = "UPDATE GameData SET whiteUsername=?, blackUsername=?, game=? WHERE id=?";
+        var json = new Gson().toJson(updatedGame.game());
+        executeUpdate(statement,updatedGame.whiteUsername(),updatedGame.blackUsername(),json,updatedGame.gameID());
     }
 
     @Override

@@ -21,13 +21,15 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        serverFacade = new ServerFacade();
         var port = server.run(0);
+        assertDoesNotThrow(()->server.clearDatabase());
+        serverFacade = new ServerFacade(port);
         System.out.println("Started test HTTP server on " + port);
     }
 
     @AfterAll
     static void stopServer() {
+        assertDoesNotThrow(()->server.clearDatabase());
         server.stop();
     }
 

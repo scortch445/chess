@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import dataaccess.SqlDataAccess;
 import handler.Handler;
@@ -8,14 +9,14 @@ import service.Service;
 
 public class Server {
 
+    public SqlDataAccess dataAccess = null;
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-
-        SqlDataAccess dataAccess = null;
         try {
             dataAccess = new SqlDataAccess();
         } catch (ServerException e) {
@@ -43,5 +44,9 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    public void clearDatabase() throws DataAccessException{
+        dataAccess.clear();
     }
 }

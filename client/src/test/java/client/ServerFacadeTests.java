@@ -1,16 +1,27 @@
 package client;
 
+import chess.ChessGame;
+import model.AuthData;
+import model.UserData;
 import org.junit.jupiter.api.*;
+import request.JoinGameRequest;
+import server.InvalidRequest;
 import server.Server;
+import server.UnauthorizedRequest;
+import ui.ServerFacade;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    private static ServerFacade serverFacade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
+        serverFacade = new ServerFacade();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
     }
@@ -20,10 +31,147 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    // Use Run with Coverage to make sure all code is run and tested
+    @Test
+    void registerSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+
+        assertEquals(AuthData.class, assertDoesNotThrow(() -> serverFacade.register(user)).getClass());
+    }
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    void registerAlreadyTaken(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertThrows(InvalidRequest.class, () -> serverFacade.register(user), "Error: already taken");
+    }
+
+    @Test
+    void loginWrongUsername(){
+        var user = new UserData("Wrong username", "password", null);
+
+        assertThrows(UnauthorizedRequest.class, () -> serverFacade.login(user));
+    }
+
+    @Test
+    void loginWrongPassword(){
+        registerSuccess();
+        UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
+        assertThrows(UnauthorizedRequest.class,()->serverFacade.login(loginDetails));
+    }
+
+    @Test
+    void loginSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+
+        assertEquals(AuthData.class, assertDoesNotThrow(() -> serverFacade.register(user)).getClass());
+
+        UserData loginDetails = new UserData("Test Username", "Test Password", null);
+        assertEquals(AuthData.class, assertDoesNotThrow(()->serverFacade.login(loginDetails)).getClass());
+    }
+
+    @Test
+    void logoutSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertDoesNotThrow(()->serverFacade.logout(authData.authToken()));
+    }
+
+    @Test
+    void logoutUnauthorized(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertThrows(UnauthorizedRequest.class, ()->serverFacade.logout("Wrong authToken"));
+    }
+
+    @Test
+    void listGamesEmpty(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertEquals(0, assertDoesNotThrow(() -> serverFacade.getGames(authData.authToken()).size()));
+    }
+
+    @Test
+    void unauthorizedListGames(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertThrows(UnauthorizedRequest.class, () -> serverFacade.getGames("Invalid authToken").size());
+    }
+
+    @Test
+    void createGameSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertInstanceOf(Integer.class,
+                assertDoesNotThrow(()->serverFacade.createGame(authData.authToken(),"Test Game Name")));
+    }
+
+    @Test
+    void unauthorizedCreateGame(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertThrows(UnauthorizedRequest.class, ()->serverFacade.createGame("Invalid Authentication","Test Game Name"));
+    }
+
+    @Test
+    @DisplayName("Join Game Success")
+    void joinGameSuccess(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData.authToken());
+
+        assertDoesNotThrow(() -> serverFacade.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Join Game User Unauthorized")
+    void joinGameUnauthorized(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, "Invalid AuthToken");
+
+        assertThrows(UnauthorizedRequest.class, () -> serverFacade.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Invalid GameID")
+    void joinGameInvalidID(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,13894127, authData.authToken());
+
+        assertThrows(InvalidRequest.class, () -> serverFacade.joinGame(joinGameRequest));
+    }
+
+    @Test
+    @DisplayName("Join Game Spot Taken")
+    void joinGameSpotTaken(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
+        var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData.authToken());
+
+        assertDoesNotThrow(() -> serverFacade.joinGame(joinGameRequest));
+
+        var user2 = new UserData("Test Username2", "Test Password2", "Test Email2");
+        AuthData authData2 = assertDoesNotThrow(() -> serverFacade.register(user2));
+        var joinGameRequest2 = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData2.authToken());
+
+        assertThrows(InvalidRequest.class, ()-> serverFacade.joinGame(joinGameRequest2));
     }
 
 }

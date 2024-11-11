@@ -1,42 +1,27 @@
 import chess.*;
+import ui.Client;
 
-import java.util.Scanner;
+import static ui.EscapeSequences.*;
 
 public class Main {
 
-    private enum State {
-        PRELOGIN,
-        POSTLOGIN,
-        INGAME
-    }
 
-    private static State state;
-    private static Scanner scanner;
 
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
 
-        state = State.PRELOGIN;
-        scanner = new Scanner(System.in);
 
-        System.out.println("♕ 240 Chess Client: " + piece);
 
-        runREPL();
-    }
-
-    private static void runREPL(){
-        while(true){
-            if(state==State.PRELOGIN){
-                System.out.print("[LOGGED OUT] >>> ");
-                String output = scanner.nextLine();
-
-                System.out.println("Inputted: " + output);
-
-            } else if (state==State.POSTLOGIN) {
-
-            } else if (state==State.INGAME){
-
-            }
+        var serverUrl = "http://localhost:8080";
+        if (args.length == 1) {
+            serverUrl = args[0];
         }
+
+        System.out.println("♕ Welcome to the Chess ♕");
+        System.out.println("For a list of commands, type "+SET_TEXT_COLOR_GREEN + "help\n");
+
+        new Client(serverUrl).run();
     }
+
+
 }

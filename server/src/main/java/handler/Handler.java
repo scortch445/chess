@@ -8,10 +8,8 @@ import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import service.Service;
-import service.ServiceException;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 
 import java.util.Map;
 

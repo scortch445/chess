@@ -1,7 +1,6 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.MemoryDataAccess;
 import dataaccess.SqlDataAccess;
 import model.AuthData;
 import model.UserData;
@@ -15,7 +14,6 @@ import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
-import service.Service;
 
 public class ServiceTests {
     private static Service service;

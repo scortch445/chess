@@ -9,10 +9,8 @@ import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.ServerException;
 import server.UnauthorizedRequest;
-import spark.Request;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Service {

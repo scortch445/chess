@@ -10,13 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import request.JoinGameRequest;
-import server.InvalidRequest;
 import server.ServerException;
-import server.UnauthorizedRequest;
-import service.Service;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -53,6 +53,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Incorrect Username Login")
     void loginWrongUsername(){
         var user = new UserData("Wrong username", "password", null);
 
@@ -60,6 +61,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Incorrect Password Login")
     void loginWrongPassword(){
         registerSuccess();
         UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
@@ -67,6 +69,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Login Test")
     void loginSuccess(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
 
@@ -77,6 +80,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Logout Test")
     void logoutSuccess(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
@@ -85,6 +89,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Logout Unauthorized")
     void logoutUnauthorized(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
@@ -93,6 +98,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("List Games Before Creating Any")
     void listGamesEmpty(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
@@ -101,14 +107,16 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("List Games With Invalid Credentials")
     void unauthorizedListGames(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
 
-        assertThrows(UnauthorizedRequest.class, () -> serverFacade.getGames("Invalid authToken").size());
+        assertThrows(ResponseException.class, () -> serverFacade.getGames("Invalid authToken").size());
     }
 
     @Test
+    @DisplayName("Create Game Test")
     void createGameSuccess(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
@@ -118,11 +126,25 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Create Game with Invalid Credentials")
     void unauthorizedCreateGame(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
 
-        assertThrows(UnauthorizedRequest.class, ()->serverFacade.createGame("Invalid Authentication","Test Game Name"));
+        assertThrows(ResponseException.class, ()->serverFacade.createGame("Invalid Authentication","Test Game Name"));
+    }
+
+    @Test
+    @DisplayName("List Games Test")
+    void listGames(){
+        var user = new UserData("Test Username", "Test Password", "Test Email");
+        AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
+
+        assertDoesNotThrow(()->serverFacade.createGame(authData.authToken(),"Test Game Name"));
+        assertDoesNotThrow(()->serverFacade.createGame(authData.authToken(),"Test Game Name 2"));
+        assertDoesNotThrow(()->serverFacade.createGame(authData.authToken(),"Test Game Name 3"));
+
+        assertEquals(3, assertDoesNotThrow(() -> serverFacade.getGames(authData.authToken()).size()));
     }
 
     @Test

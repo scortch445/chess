@@ -28,7 +28,6 @@ public class ServerFacade {
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             authData = new Gson().fromJson(inputStreamReader, AuthData.class);
-            System.out.println(authData);
         }
 
         return authData;
@@ -44,7 +43,6 @@ public class ServerFacade {
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             authData = new Gson().fromJson(inputStreamReader, AuthData.class);
-            System.out.println(authData);
         }
 
         return authData;
@@ -55,18 +53,41 @@ public class ServerFacade {
         sendMessage("/session","DELETE",null,authToken);
     }
 
-    public ArrayList<GameData> getGames(String authToken) {
-        return null;
+    public ArrayList<GameData> getGames(String authToken) throws Exception {
+        var http = sendMessage("/game","GET",null, authToken);
+        ArrayList<GameData> games;
+
+        record listGamesResponse(ArrayList<GameData> games){
+        }
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            var result = new Gson().fromJson(inputStreamReader, listGamesResponse.class);
+            games = result.games;
+            System.out.println(games);
+        }
+
+        return games;
     }
 
-    public int createGame(String authToken, String gameName){
-        return 0;
+    public int createGame(String authToken, String gameName) throws Exception {
+        var body = Map.of("gameName", gameName);
+        var http = sendMessage("/game","POST",body,authToken);
+
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            var result = new Gson().fromJson(inputStreamReader, GameData.class);
+            return result.gameID();
+        }
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) {
 
     }
 
+    // TODO modify this so multiple connections can be established back to back
+    // TODO so that all tests can be run at once and they all pass
     private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body, String authToken) throws Exception {
         var http = (HttpURLConnection) new URI(base_url+path).toURL().openConnection();
         http.setRequestMethod(httpRequestMethod);

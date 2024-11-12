@@ -23,7 +23,7 @@ public class ServerFacade {
         AuthData authData;
         var body = Map.of("username", userData.username(), "password", userData.password(),"email",userData.email());
 
-        var http = sendMessage("/user","POST",body);
+        var http = sendMessage("/user","POST",body,null);
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
@@ -39,7 +39,7 @@ public class ServerFacade {
 
         var body = Map.of("username", userData.username(), "password", userData.password());
 
-        var http = sendMessage("/session","POST",body);
+        var http = sendMessage("/session","POST",body,null);
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
@@ -50,8 +50,9 @@ public class ServerFacade {
         return authData;
     }
 
-    public void logout(String authToken) {
+    public void logout(String authToken) throws Exception {
 
+        sendMessage("/session","DELETE",null,authToken);
     }
 
     public ArrayList<GameData> getGames(String authToken) {
@@ -66,7 +67,7 @@ public class ServerFacade {
 
     }
 
-    private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body) throws Exception {
+    private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body, String authToken) throws Exception {
         var http = (HttpURLConnection) new URI(base_url+path).toURL().openConnection();
         http.setRequestMethod(httpRequestMethod);
 
@@ -75,11 +76,16 @@ public class ServerFacade {
 
         // Write out a header
         http.addRequestProperty("Content-Type", "application/json");
+        if(authToken!=null){
+            http.addRequestProperty("authorization",authToken);
+        }
 
         // Write out the body
-        try (var outputStream = http.getOutputStream()) {
-            var jsonBody = new Gson().toJson(body);
-            outputStream.write(jsonBody.getBytes());
+        if(body!=null) {
+            try (var outputStream = http.getOutputStream()) {
+                var jsonBody = new Gson().toJson(body);
+                outputStream.write(jsonBody.getBytes());
+            }
         }
 
         http.connect();

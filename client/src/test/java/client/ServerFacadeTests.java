@@ -89,7 +89,7 @@ public class ServerFacadeTests {
         var user = new UserData("Test Username", "Test Password", "Test Email");
         AuthData authData = assertDoesNotThrow(() -> serverFacade.register(user));
 
-        assertThrows(UnauthorizedRequest.class, ()->serverFacade.logout("Wrong authToken"));
+        assertThrows(ResponseException.class, ()->serverFacade.logout("Wrong authToken"));
     }
 
     @Test

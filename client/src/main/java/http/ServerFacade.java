@@ -82,8 +82,9 @@ public class ServerFacade {
         }
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest) {
-
+    public void joinGame(JoinGameRequest joinGameRequest) throws Exception{
+        var body = Map.of("playerColor",joinGameRequest.playerColor(),"gameID",joinGameRequest.gameID());
+        sendMessage("/game","PUT",body, joinGameRequest.authToken());
     }
 
     // TODO modify this so multiple connections can be established back to back

@@ -168,7 +168,7 @@ public class ServerFacadeTests {
         var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
         var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, "Invalid AuthToken");
 
-        assertThrows(UnauthorizedRequest.class, () -> serverFacade.joinGame(joinGameRequest));
+        assertThrows(ResponseException.class, () -> serverFacade.joinGame(joinGameRequest));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class ServerFacadeTests {
         var gameID = assertDoesNotThrow(() -> serverFacade.createGame(authData.authToken(), "Test Game"));
         var joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.BLACK,13894127, authData.authToken());
 
-        assertThrows(InvalidRequest.class, () -> serverFacade.joinGame(joinGameRequest));
+        assertThrows(ResponseException.class, () -> serverFacade.joinGame(joinGameRequest));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class ServerFacadeTests {
         AuthData authData2 = assertDoesNotThrow(() -> serverFacade.register(user2));
         var joinGameRequest2 = new JoinGameRequest(ChessGame.TeamColor.BLACK,gameID, authData2.authToken());
 
-        assertThrows(InvalidRequest.class, ()-> serverFacade.joinGame(joinGameRequest2));
+        assertThrows(ResponseException.class, ()-> serverFacade.joinGame(joinGameRequest2));
     }
 
 }

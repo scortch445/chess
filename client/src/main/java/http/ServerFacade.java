@@ -1,4 +1,4 @@
-package ui;
+package http;
 
 import com.google.gson.Gson;
 import model.*;
@@ -39,6 +39,11 @@ public class ServerFacade {
         }
 
         http.connect();
+        int statusCode = http.getResponseCode();
+
+        if(statusCode!=200){
+            throw new ResponseException(statusCode, http.getResponseMessage());
+        }
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);

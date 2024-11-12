@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import http.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -8,7 +9,7 @@ import request.JoinGameRequest;
 import server.InvalidRequest;
 import server.Server;
 import server.UnauthorizedRequest;
-import ui.ServerFacade;
+import http.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +36,7 @@ public class ServerFacadeTests {
 
     // Use Run with Coverage to make sure all code is run and tested
     @Test
+    @DisplayName("Register Test")
     void registerSuccess(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
 
@@ -42,11 +44,12 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Already Taken Registration")
     void registerAlreadyTaken(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         assertDoesNotThrow(() -> serverFacade.register(user));
 
-        assertThrows(InvalidRequest.class, () -> serverFacade.register(user), "Error: already taken");
+        assertThrows(ResponseException.class, () -> serverFacade.register(user), "Error: already taken");
     }
 
     @Test

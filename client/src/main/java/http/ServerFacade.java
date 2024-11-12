@@ -21,29 +21,9 @@ public class ServerFacade {
 
     public AuthData register(UserData userData) throws Exception{
         AuthData authData;
-
-        var http = (HttpURLConnection) new URI(base_url+"/user").toURL().openConnection();
-        http.setRequestMethod("POST");
-
-        // Specify that we are going to write out data
-        http.setDoOutput(true);
-
-        // Write out a header
-        http.addRequestProperty("Content-Type", "application/json");
-
-        // Write out the body
         var body = Map.of("username", userData.username(), "password", userData.password(),"email",userData.email());
-        try (var outputStream = http.getOutputStream()) {
-            var jsonBody = new Gson().toJson(body);
-            outputStream.write(jsonBody.getBytes());
-        }
 
-        http.connect();
-        int statusCode = http.getResponseCode();
-
-        if(statusCode!=200){
-            throw new ResponseException(statusCode, http.getResponseMessage());
-        }
+        var http = sendMessage("/user","POST",body);
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
@@ -54,8 +34,20 @@ public class ServerFacade {
         return authData;
     }
 
-    public AuthData login(UserData userData) {
-        return null;
+    public AuthData login(UserData userData) throws Exception{
+        AuthData authData;
+
+        var body = Map.of("username", userData.username(), "password", userData.password());
+
+        var http = sendMessage("/session","POST",body);
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            authData = new Gson().fromJson(inputStreamReader, AuthData.class);
+            System.out.println(authData);
+        }
+
+        return authData;
     }
 
     public void logout(String authToken) {
@@ -74,4 +66,33 @@ public class ServerFacade {
 
     }
 
+    private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body) throws Exception {
+        var http = (HttpURLConnection) new URI(base_url+path).toURL().openConnection();
+        http.setRequestMethod(httpRequestMethod);
+
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+
+        // Write out a header
+        http.addRequestProperty("Content-Type", "application/json");
+
+        // Write out the body
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(body);
+            outputStream.write(jsonBody.getBytes());
+        }
+
+        http.connect();
+
+        // handle any error brought up in the response
+        int statusCode = http.getResponseCode();
+
+        if(statusCode!=200){
+            throw new ResponseException(statusCode, http.getResponseMessage());
+        }
+
+        return http;
+    }
+
 }
+

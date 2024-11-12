@@ -44,7 +44,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @DisplayName("Already Taken Registration")
+    @DisplayName("Register with Username Already Taken")
     void registerAlreadyTaken(){
         var user = new UserData("Test Username", "Test Password", "Test Email");
         assertDoesNotThrow(() -> serverFacade.register(user));
@@ -56,14 +56,14 @@ public class ServerFacadeTests {
     void loginWrongUsername(){
         var user = new UserData("Wrong username", "password", null);
 
-        assertThrows(UnauthorizedRequest.class, () -> serverFacade.login(user));
+        assertThrows(ResponseException.class, () -> serverFacade.login(user), "Error: unauthorized");
     }
 
     @Test
     void loginWrongPassword(){
         registerSuccess();
         UserData loginDetails = new UserData("Test Username", "Wrong Password", null);
-        assertThrows(UnauthorizedRequest.class,()->serverFacade.login(loginDetails));
+        assertThrows(ResponseException.class,()->serverFacade.login(loginDetails),"Error: unauthorized");
     }
 
     @Test

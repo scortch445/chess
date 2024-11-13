@@ -2,6 +2,7 @@ package ui;
 
 import http.ResponseException;
 import http.ServerFacade;
+import model.AuthData;
 import model.UserData;
 
 import java.security.InvalidParameterException;
@@ -24,6 +25,8 @@ public class Client {
     private Scanner scanner;
     private boolean running;
 
+    private AuthData authData;
+
     public Client(int port){
         state = State.PRELOGIN;
         scanner = new Scanner(System.in);
@@ -36,7 +39,7 @@ public class Client {
 
     public void run(){
         while(running){
-            System.out.print(SET_TEXT_COLOR_YELLOW + "["+ state.toString() + "] "
+            System.out.print(SET_TEXT_COLOR_YELLOW + "\n["+ state.toString() + "] "
                     + SET_TEXT_COLOR_LIGHT_GREY + SET_TEXT_BLINKING + ">>> ");
             String input = scanner.nextLine();
             try {
@@ -46,7 +49,9 @@ public class Client {
                 switch (cmd) {
                     case "help" -> help();
                     case "register" -> register(params);
-                    case "quit" -> running=false;
+                    case "login" -> login(params);
+                    case "logout" -> logout();
+                    case "quit" -> quit();
                     default -> throw new InvalidCommandException();
                 }
             } catch(InvalidCommandException ex){
@@ -63,6 +68,7 @@ public class Client {
                 System.out.println("["+ex.statusCode+"] "+ex.getMessage());
             } catch (Exception ex){
                 System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
     }
@@ -104,6 +110,14 @@ public class Client {
         }
     }
 
+    private void quit() throws Exception {
+        if(state!=State.PRELOGIN) {
+            logout();
+        }
+
+        running = false;
+    }
+
     private void register(String... params) throws Exception {
         assumePreLogin();
         if(params.length !=3 ){
@@ -111,7 +125,43 @@ public class Client {
         }
 
         UserData user = new UserData(params[0],params[1],params[2]);
-        server.register(user);
+        authData = server.register(user);
+
+        System.out.println(SET_TEXT_COLOR_GREEN+"You are successfully registered as "
+                +SET_TEXT_COLOR_WHITE + authData.username());
+
+        state = State.POSTLOGIN;
+    }
+
+    private void login(String... params) throws Exception {
+        assumePreLogin();
+        if(params.length !=2 ){
+            throw new InvalidParameterException();
+        }
+
+        UserData user = new UserData(params[0],params[1],null);
+        authData = server.login(user);
+
+        System.out.println(SET_TEXT_COLOR_BLUE+"Welcome "+SET_TEXT_COLOR_WHITE + authData.username());
+
+        state = State.POSTLOGIN;
+    }
+
+    private void logout() throws Exception {
+        assumePostLogin();
+        server.logout(authData.authToken());
+
+        System.out.println(SET_TEXT_COLOR_BLUE + "See you later "+
+                SET_TEXT_COLOR_WHITE + authData.username());
+
+        authData = null;
+        state=State.PRELOGIN;
+    }
+
+    private void listGames() throws Exception {
+        assumePostLogin();
+
+        var games = server.getGames(authData.authToken());
 
 
     }

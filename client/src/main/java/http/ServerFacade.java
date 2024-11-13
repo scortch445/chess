@@ -64,7 +64,6 @@ public class ServerFacade {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             var result = new Gson().fromJson(inputStreamReader, listGamesResponse.class);
             games = result.games;
-            System.out.println(games);
         }
 
         return games;

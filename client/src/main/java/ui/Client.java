@@ -40,7 +40,7 @@ public class Client {
     public void run(){
         while(running){
             System.out.print(SET_TEXT_COLOR_YELLOW + "\n["+ state.toString() + "] "
-                    + SET_TEXT_COLOR_LIGHT_GREY + SET_TEXT_BLINKING + ">>> ");
+                    + SET_TEXT_COLOR_LIGHT_GREY + ">>> ");
             String input = scanner.nextLine();
             try {
                 var tokens = input.toLowerCase().split(" ");
@@ -51,6 +51,8 @@ public class Client {
                     case "register" -> register(params);
                     case "login" -> login(params);
                     case "logout" -> logout();
+                    case "list" -> listGames();
+                    case "create" -> createGame(params);
                     case "quit" -> quit();
                     default -> throw new InvalidCommandException();
                 }
@@ -110,6 +112,12 @@ public class Client {
         }
     }
 
+    private void assumeParams(int expected, String... params){
+        if(params.length !=expected ){
+            throw new InvalidParameterException();
+        }
+    }
+
     private void quit() throws Exception {
         if(state!=State.PRELOGIN) {
             logout();
@@ -120,9 +128,7 @@ public class Client {
 
     private void register(String... params) throws Exception {
         assumePreLogin();
-        if(params.length !=3 ){
-            throw new InvalidParameterException();
-        }
+        assumeParams(3,params);
 
         UserData user = new UserData(params[0],params[1],params[2]);
         authData = server.register(user);
@@ -135,9 +141,7 @@ public class Client {
 
     private void login(String... params) throws Exception {
         assumePreLogin();
-        if(params.length !=2 ){
-            throw new InvalidParameterException();
-        }
+        assumeParams(2,params);
 
         UserData user = new UserData(params[0],params[1],null);
         authData = server.login(user);
@@ -163,7 +167,39 @@ public class Client {
 
         var games = server.getGames(authData.authToken());
 
+        System.out.println(SET_TEXT_COLOR_WHITE+SET_TEXT_UNDERLINE+"\nGames:"+RESET_TEXT_UNDERLINE);
+        if (games.size()==0) {
+            System.out.println(SET_TEXT_COLOR_BLUE+"None\nYou should try creating a game:");
+            System.out.println(SET_TEXT_COLOR_GREEN+"create <NAME>"
+                    +SET_TEXT_COLOR_LIGHT_GREY+" - "
+                    +SET_TEXT_COLOR_MAGENTA+"a game");
+        } else {
+            System.out.println(SET_TEXT_COLOR_MAGENTA+SET_TEXT_ITALIC+
+                    "\tNAME\t\tID\t\tWHITE USER\t\tBLACK USER"+
+                    RESET_TEXT_ITALIC);
+            int i = 0;
+            for (var game : games){
+                i++;
+                String whiteUser = (game.whiteUsername()==null) ? "\t" : game.whiteUsername();
+                String blackUser = (game.blackUsername()==null) ? "\t" : game.blackUsername();
+                System.out.println(SET_TEXT_COLOR_WHITE+i+". "+SET_TEXT_COLOR_MAGENTA+
+                        game.gameName()+"\t\t"+
+                        game.gameID()+"\t\t"+
+                        whiteUser+"\t\t\t"+
+                        blackUser);
+            }
+        }
+    }
 
+    private void createGame(String... params) throws Exception {
+        assumePostLogin();
+        assumeParams(1,params);
+
+        int id = server.createGame(authData.authToken(),params[0]);
+
+        System.out.println(SET_TEXT_COLOR_WHITE+"Game "+
+                SET_TEXT_COLOR_BLUE + "\"" + params[0] + "\"" + SET_TEXT_COLOR_WHITE+" created with id: "+
+                SET_TEXT_COLOR_BLUE+id);
     }
 
 }

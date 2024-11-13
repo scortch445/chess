@@ -87,8 +87,6 @@ public class ServerFacade {
         sendMessage("/game","PUT",body, joinGameRequest.authToken());
     }
 
-    // TODO modify this so multiple connections can be established back to back
-    // TODO so that all tests can be run at once and they all pass
     private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body, String authToken) throws Exception {
         var http = (HttpURLConnection) new URI(base_url+path).toURL().openConnection();
         http.setRequestMethod(httpRequestMethod);

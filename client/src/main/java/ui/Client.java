@@ -1,9 +1,11 @@
 package ui;
 
+import chess.ChessGame;
 import http.ResponseException;
 import http.ServerFacade;
 import model.AuthData;
 import model.UserData;
+import request.JoinGameRequest;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
@@ -26,6 +28,7 @@ public class Client {
     private boolean running;
 
     private AuthData authData;
+    int[] gameIDs;
 
     public Client(int port){
         state = State.PRELOGIN;
@@ -175,16 +178,16 @@ public class Client {
                     +SET_TEXT_COLOR_MAGENTA+"a game");
         } else {
             System.out.println(SET_TEXT_COLOR_MAGENTA+SET_TEXT_ITALIC+
-                    "\tNAME\t\tID\t\tWHITE USER\t\tBLACK USER"+
+                    "\tNAME\t\tWHITE USER\t\tBLACK USER"+
                     RESET_TEXT_ITALIC);
             int i = 0;
             for (var game : games){
                 i++;
+                gameIDs[i] = game.gameID();
                 String whiteUser = (game.whiteUsername()==null) ? "\t" : game.whiteUsername();
                 String blackUser = (game.blackUsername()==null) ? "\t" : game.blackUsername();
                 System.out.println(SET_TEXT_COLOR_WHITE+i+". "+SET_TEXT_COLOR_MAGENTA+
                         game.gameName()+"\t\t"+
-                        game.gameID()+"\t\t"+
                         whiteUser+"\t\t\t"+
                         blackUser);
             }
@@ -195,11 +198,28 @@ public class Client {
         assumePostLogin();
         assumeParams(1,params);
 
-        int id = server.createGame(authData.authToken(),params[0]);
+        server.createGame(authData.authToken(),params[0]);
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Game "+
-                SET_TEXT_COLOR_BLUE + "\"" + params[0] + "\"" + SET_TEXT_COLOR_WHITE+" created with id: "+
-                SET_TEXT_COLOR_BLUE+id);
+                SET_TEXT_COLOR_BLUE + "\"" + params[0] + "\"" + SET_TEXT_COLOR_WHITE+" created");
+    }
+
+    private void joinGame(String... params) throws Exception {
+        assumePostLogin();
+        assumeParams(2,params);
+        ChessGame.TeamColor color;
+
+        if(params[1]=="white"){
+            color = ChessGame.TeamColor.WHITE;
+        } else if(params[1]=="black"){
+            color = ChessGame.TeamColor.BLACK;
+        } else{
+            throw new InvalidParameterException();
+        }
+
+
+
+        var request = new JoinGameRequest(color,gameIDs[Integer.parseInt(params[0])],authData.authToken());
     }
 
 }

@@ -28,10 +28,15 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
     }
 
+    @BeforeEach
+    void resetDatabase(){
+        assertDoesNotThrow(()->server.clearDatabase());
+    }
+
     @AfterAll
     static void stopServer() {
-        assertDoesNotThrow(()->server.clearDatabase());
         server.stop();
+        assertDoesNotThrow(()->server.clearDatabase());
     }
 
     // Use Run with Coverage to make sure all code is run and tested

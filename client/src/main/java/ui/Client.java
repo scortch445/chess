@@ -3,13 +3,11 @@ package ui;
 import chess.ChessGame;
 import http.ServerFacade;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import request.JoinGameRequest;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -27,7 +25,12 @@ public class Client {
     private boolean running;
 
     private AuthData authData;
-    int[] gameIDs;
+
+    private int[] gameIDs;
+    private ChessBoardUI boardUI;
+
+    private ArrayList<GameData> games;
+    private GameData gameData;
 
     public Client(int port){
         state = State.PRELOGIN;
@@ -36,6 +39,7 @@ public class Client {
         this.server = new ServerFacade(port);
 
         running = true;
+        boardUI = new ChessBoardUI();
     }
 
 
@@ -166,7 +170,7 @@ public class Client {
     private void listGames() throws Exception {
         assumePostLogin();
 
-        var games = server.getGames(authData.authToken());
+        games = server.getGames(authData.authToken());
 
         System.out.println(SET_TEXT_COLOR_WHITE+SET_TEXT_UNDERLINE+"\nGames:"+RESET_TEXT_UNDERLINE);
         if (games.isEmpty()) {
@@ -224,7 +228,7 @@ public class Client {
 
         server.joinGame(request);
         state = State.INGAME;
-        new ChessGameUI().draw();
+        boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
     }
 
     private void observeGame(String... params) throws Exception {
@@ -238,7 +242,7 @@ public class Client {
 //        System.out.println(request.gameID()+1);
 
         state=State.INGAME;
-        new ChessGameUI().draw();
+        boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
     }
 
 }

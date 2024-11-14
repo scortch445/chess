@@ -1,13 +1,11 @@
 package ui;
 
 import chess.ChessGame;
-import http.ResponseException;
 import http.ServerFacade;
 import model.AuthData;
 import model.UserData;
 import request.JoinGameRequest;
 
-import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -62,21 +60,8 @@ public class Client {
                     case "quit" -> quit();
                     default -> throw new InvalidCommandException();
                 }
-            } catch(InvalidCommandException ex){
-                System.out.println(SET_TEXT_COLOR_RED + "Invalid Command! "
-                        +SET_TEXT_COLOR_LIGHT_GREY +
-                        "Try typing "+ SET_TEXT_COLOR_GREEN+"help"
-                        + SET_TEXT_COLOR_LIGHT_GREY+ " for a list of commands");
-            } catch(InvalidParameterException ex){
-                System.out.println(SET_TEXT_COLOR_RED + "Invalid Parameters! "
-                        +SET_TEXT_COLOR_LIGHT_GREY +
-                        "Try typing "+ SET_TEXT_COLOR_GREEN+"help"
-                        + SET_TEXT_COLOR_LIGHT_GREY+ " for which parameters are needed");
-            } catch (ResponseException ex) {
-                System.out.println("["+ex.statusCode+"] "+ex.getMessage());
             } catch (Exception ex){
                 System.out.println(ex.getMessage());
-                ex.printStackTrace();
             }
         }
     }
@@ -115,6 +100,14 @@ public class Client {
     private void assumePostLogin(){
         if(state!=State.POSTLOGIN){
             throw new InvalidCommandException();
+        }
+    }
+
+    private void assumeGamesNotNull(){
+        if(gameIDs==null){
+            throw new InvalidCommandException(SET_TEXT_COLOR_RED + "Woah woah woah! Hold onto your horses!\n"
+                    +SET_TEXT_COLOR_LIGHT_GREY +
+                    "Try listing the games first using the command "+ SET_TEXT_COLOR_GREEN+"list");
         }
     }
 
@@ -158,7 +151,9 @@ public class Client {
     }
 
     private void logout() throws Exception {
-        assumePostLogin();
+        if(state!=State.INGAME) {
+            assumePostLogin();
+        }
         server.logout(authData.authToken());
 
         System.out.println(SET_TEXT_COLOR_BLUE + "See you later "+
@@ -211,6 +206,8 @@ public class Client {
     private void joinGame(String... params) throws Exception {
         assumePostLogin();
         assumeParams(2,params);
+        assumeGamesNotNull();
+
         ChessGame.TeamColor color;
 
         if(Objects.equals(params[1], "white")){
@@ -227,18 +224,21 @@ public class Client {
 
         server.joinGame(request);
         state = State.INGAME;
+        new ChessGameUI().draw();
     }
 
     private void observeGame(String... params) throws Exception {
         assumePostLogin();
         assumeParams(1,params);
+        assumeGamesNotNull();
 
-        System.out.println(SET_TEXT_COLOR_WHITE+"Joining game...");
+        System.out.println(SET_TEXT_COLOR_WHITE+"Observing game...");
 
-        var request = new JoinGameRequest(null,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
-        System.out.println(request.gameID()+1);
+//        var request = new JoinGameRequest(null,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
+//        System.out.println(request.gameID()+1);
 
         state=State.INGAME;
+        new ChessGameUI().draw();
     }
 
 }

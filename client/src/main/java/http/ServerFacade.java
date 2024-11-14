@@ -13,10 +13,10 @@ import java.util.Map;
 
 public class ServerFacade {
 
-    private String base_url;
+    private String baseUrl;
 
     public ServerFacade(int port){
-        base_url = "http://localhost:" + port;
+        baseUrl = "http://localhost:" + port;
     }
 
     public AuthData register(UserData userData) throws Exception{
@@ -57,12 +57,12 @@ public class ServerFacade {
         var http = sendMessage("/game","GET",null, authToken);
         ArrayList<GameData> games;
 
-        record listGamesResponse(ArrayList<GameData> games){
+        record ListGamesResponse(ArrayList<GameData> games){
         }
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            var result = new Gson().fromJson(inputStreamReader, listGamesResponse.class);
+            var result = new Gson().fromJson(inputStreamReader, ListGamesResponse.class);
             games = result.games;
         }
 
@@ -87,7 +87,7 @@ public class ServerFacade {
     }
 
     private HttpURLConnection sendMessage(String path, String httpRequestMethod, Map body, String authToken) throws Exception {
-        var http = (HttpURLConnection) new URI(base_url+path).toURL().openConnection();
+        var http = (HttpURLConnection) new URI(baseUrl+path).toURL().openConnection();
         http.setRequestMethod(httpRequestMethod);
 
         // Specify that we are going to write out data

@@ -10,6 +10,7 @@ import request.JoinGameRequest;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -56,6 +57,8 @@ public class Client {
                     case "logout" -> logout();
                     case "list" -> listGames();
                     case "create" -> createGame(params);
+                    case "join" -> joinGame(params);
+                    case "observe" -> observeGame(params);
                     case "quit" -> quit();
                     default -> throw new InvalidCommandException();
                 }
@@ -171,7 +174,7 @@ public class Client {
         var games = server.getGames(authData.authToken());
 
         System.out.println(SET_TEXT_COLOR_WHITE+SET_TEXT_UNDERLINE+"\nGames:"+RESET_TEXT_UNDERLINE);
-        if (games.size()==0) {
+        if (games.isEmpty()) {
             System.out.println(SET_TEXT_COLOR_BLUE+"None\nYou should try creating a game:");
             System.out.println(SET_TEXT_COLOR_GREEN+"create <NAME>"
                     +SET_TEXT_COLOR_LIGHT_GREY+" - "
@@ -181,9 +184,10 @@ public class Client {
                     "\tNAME\t\tWHITE USER\t\tBLACK USER"+
                     RESET_TEXT_ITALIC);
             int i = 0;
+            gameIDs = new int[games.size()];
             for (var game : games){
                 i++;
-                gameIDs[i] = game.gameID();
+                gameIDs[i-1] = game.gameID();
                 String whiteUser = (game.whiteUsername()==null) ? "\t" : game.whiteUsername();
                 String blackUser = (game.blackUsername()==null) ? "\t" : game.blackUsername();
                 System.out.println(SET_TEXT_COLOR_WHITE+i+". "+SET_TEXT_COLOR_MAGENTA+
@@ -209,17 +213,32 @@ public class Client {
         assumeParams(2,params);
         ChessGame.TeamColor color;
 
-        if(params[1]=="white"){
+        if(Objects.equals(params[1], "white")){
             color = ChessGame.TeamColor.WHITE;
-        } else if(params[1]=="black"){
+        } else if(Objects.equals(params[1], "black")){
             color = ChessGame.TeamColor.BLACK;
         } else{
             throw new InvalidParameterException();
         }
 
+        System.out.println(SET_TEXT_COLOR_WHITE+"Joining game...");
 
+        var request = new JoinGameRequest(color,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
 
-        var request = new JoinGameRequest(color,gameIDs[Integer.parseInt(params[0])],authData.authToken());
+        server.joinGame(request);
+        state = State.INGAME;
+    }
+
+    private void observeGame(String... params) throws Exception {
+        assumePostLogin();
+        assumeParams(1,params);
+
+        System.out.println(SET_TEXT_COLOR_WHITE+"Joining game...");
+
+        var request = new JoinGameRequest(null,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
+        System.out.println(request.gameID()+1);
+
+        state=State.INGAME;
     }
 
 }

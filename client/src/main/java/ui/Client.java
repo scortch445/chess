@@ -65,7 +65,7 @@ public class Client {
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
-                System.out.println(ex.getMessage());
+                System.out.println(SET_TEXT_COLOR_RED+ex.getMessage());
             }
         }
     }
@@ -86,6 +86,10 @@ public class Client {
                     "logout","when you are done",
                     "quit","playing chess",
                     "help","list possible commands"
+            );
+            case State.INGAME -> commands = Map.of(
+                    "help","list possible commands",
+                    "quit","exits the program"
             );
         }
         for(var key : commands.keySet()){
@@ -112,6 +116,28 @@ public class Client {
             throw new InvalidCommandException(SET_TEXT_COLOR_RED + "Woah woah woah! Hold onto your horses!\n"
                     +SET_TEXT_COLOR_LIGHT_GREY +
                     "Try listing the games first using the command "+ SET_TEXT_COLOR_GREEN+"list");
+        }
+    }
+
+    private int assumeValidGameChoice(String param){
+        int gameChosen;
+        try{
+            gameChosen = Integer.parseInt(param);
+            if(gameChosen>=games.size() || gameChosen <= 0) {
+                throw new InvalidCommandException(
+                        SET_TEXT_COLOR_RED + "Silly goose! There is no game with the id: "
+                                + SET_TEXT_COLOR_MAGENTA + gameChosen +
+                                SET_TEXT_COLOR_LIGHT_GREY + "\nTry using the command " +
+                                SET_TEXT_COLOR_GREEN + "list");
+            }
+
+            return gameChosen;
+        } catch (Exception ex){
+            throw new InvalidCommandException(
+                    SET_TEXT_COLOR_RED+"Silly goose! There is no game with the id: "
+                            +SET_TEXT_COLOR_MAGENTA + param+
+                            SET_TEXT_COLOR_LIGHT_GREY+"\nTry using the command "+
+                            SET_TEXT_COLOR_GREEN+"list");
         }
     }
 
@@ -212,6 +238,8 @@ public class Client {
         assumeParams(2,params);
         assumeGamesNotNull();
 
+        int gameChosen = assumeValidGameChoice(params[0]);
+
         ChessGame.TeamColor color;
 
         if(Objects.equals(params[1], "white")){
@@ -224,7 +252,7 @@ public class Client {
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Joining game...");
 
-        var request = new JoinGameRequest(color,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
+        var request = new JoinGameRequest(color,gameIDs[gameChosen-1],authData.authToken());
 
         server.joinGame(request);
         state = State.INGAME;
@@ -236,13 +264,14 @@ public class Client {
         assumeParams(1,params);
         assumeGamesNotNull();
 
+        int gameChosen = assumeValidGameChoice(params[0]);
+
+
         System.out.println(SET_TEXT_COLOR_WHITE+"Observing game...");
 
-//        var request = new JoinGameRequest(null,gameIDs[Integer.parseInt(params[0])-1],authData.authToken());
-//        System.out.println(request.gameID()+1);
 
         state=State.INGAME;
-        boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
+        boardUI.draw(games.get(gameChosen - 1));
     }
 
 }

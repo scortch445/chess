@@ -25,43 +25,42 @@ public class ChessBoardUI {
             ChessPiece.PieceType.PAWN,BLACK_PAWN
     );
 
+    String[] colHeaders = {
+            EMPTY," a ","  b "," c ","  d "," e ","  f "," g ","  h ",EMPTY
+    };
+    String[] rowHeaders = {
+            " 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "
+    };
+
     public void draw(GameData data){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         var game = data.game();
 
         out.print(ERASE_SCREEN);
 
-        drawChessBoard(out, game);
+        drawChessBoard(out, game, ChessGame.TeamColor.BLACK);
+        out.println();
+        drawChessBoard(out,game, ChessGame.TeamColor.WHITE);
 
         clearFormat(out);
     }
 
 
-    private void drawChessBoard(PrintStream out, ChessGame game) {
+    private void drawChessBoard(PrintStream out, ChessGame game, ChessGame.TeamColor color) {
+        drawColumnLabels(out);
 
-        for (int boardRow = BOARD_SIZE_IN_SQUARES - 1; boardRow >= 0; --boardRow) {
-
-            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                if(isLightTile(boardRow,boardCol)){
-                    setWhite(out);
-                } else {
-                    setGrey(out);
-                }
-                ChessPiece piece = game.getBoard().getPiece(new ChessPosition(boardRow + 1,boardCol + 1));
-
-
-                if(piece!=null){
-                    printChessPiece(out, piece);
-                } else{
-                    out.print(EMPTY);
-                }
-
-                clearFormat(out);
+        if(color== ChessGame.TeamColor.WHITE){
+            for (int boardRow = BOARD_SIZE_IN_SQUARES - 1; boardRow >= 0; --boardRow) {
+                drawRow(out,boardRow,game);
             }
-
-            out.println();
-
+        } else{
+            for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+                drawRow(out,boardRow,game);
+            }
         }
+
+
+        drawColumnLabels(out);
     }
 
     private boolean isLightTile(int row, int col){
@@ -81,6 +80,53 @@ public class ChessBoardUI {
     private void clearFormat(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
+    }
+
+    private void drawColumnLabels(PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+
+        for(var string : colHeaders){
+            out.print(string);
+        }
+
+        clearFormat(out);
+        out.println();
+    }
+
+    private void drawRowLabel(PrintStream out, int row) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+
+        out.print(rowHeaders[row]);
+
+        clearFormat(out);
+    }
+
+    private void drawRow(PrintStream out, int row, ChessGame game){
+        drawRowLabel(out,row);
+
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            if(isLightTile(row,boardCol)){
+                setWhite(out);
+            } else {
+                setGrey(out);
+            }
+            ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row + 1,boardCol + 1));
+
+
+            if(piece!=null){
+                printChessPiece(out, piece);
+            } else{
+                out.print(EMPTY);
+            }
+
+            clearFormat(out);
+        }
+
+        drawRowLabel(out,row);
+
+        out.println();
     }
 
     private void printChessPiece(PrintStream out, ChessPiece piece) {

@@ -213,10 +213,10 @@ public class Client {
             for (var game : games){
                 i++;
                 gameIDs[i-1] = game.gameID();
-                String whiteUser = (game.whiteUsername()==null) ? "\t" : game.whiteUsername();
-                String blackUser = (game.blackUsername()==null) ? "\t" : game.blackUsername();
+                String whiteUser = (game.whiteUsername()==null) ? "\t\t" : game.whiteUsername();
+                String blackUser = (game.blackUsername()==null) ? "\t\t" : game.blackUsername();
                 System.out.println(SET_TEXT_COLOR_WHITE+i+". "+SET_TEXT_COLOR_MAGENTA+
-                        game.gameName()+"\t\t"+
+                        game.gameName()+"\t\t\t"+
                         whiteUser+"\t\t\t"+
                         blackUser);
             }

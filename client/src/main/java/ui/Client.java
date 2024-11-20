@@ -123,7 +123,7 @@ public class Client {
         int gameChosen;
         try{
             gameChosen = Integer.parseInt(param);
-            if(gameChosen>=games.size() || gameChosen <= 0) {
+            if(gameChosen>games.size() || gameChosen <= 0) {
                 throw new InvalidCommandException(
                         SET_TEXT_COLOR_RED + "Silly goose! There is no game with the id: "
                                 + SET_TEXT_COLOR_MAGENTA + gameChosen +

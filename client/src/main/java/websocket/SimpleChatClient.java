@@ -4,7 +4,7 @@ import javax.websocket.*;
 import java.net.URI;
 import java.util.Scanner;
 
-public class SimpleChatClient {
+public class SimpleChatClient extends Endpoint {
     public static void main(String[] args) throws Exception {
         var ws = new SimpleChatClient();
         Scanner scanner = new Scanner(System.in);

@@ -1,10 +1,8 @@
 package websocket;
 
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.*;
 import spark.Spark;
-
-import javax.websocket.Session;
 
 
 @WebSocket
@@ -17,6 +15,6 @@ public class SimpleChatServer {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        session.getBasicRemote().sendText("SERVER: " + message);
+        session.getRemote().sendString("SERVER: " + message);
     }
 }

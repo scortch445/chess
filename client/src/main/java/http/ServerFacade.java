@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ServerFacade {
 
-    private String baseUrl;
+    public String baseUrl;
 
     public ServerFacade(int port){
         baseUrl = "http://localhost:" + port;

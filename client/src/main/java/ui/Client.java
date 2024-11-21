@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import request.JoinGameRequest;
+import websocket.WebSocketFacade;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class Client {
     }
 
     private final ServerFacade server;
+    private WebSocketFacade ws;
 
     private State state;
     private Scanner scanner;
@@ -151,6 +153,9 @@ public class Client {
         if(state!=State.PRELOGIN) {
             logout();
         }
+        if (state==State.INGAME){
+            ws.close();
+        }
 
         running = false;
     }
@@ -257,6 +262,7 @@ public class Client {
         server.joinGame(request);
         state = State.INGAME;
         boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
+        ws = new WebSocketFacade(server.baseUrl);
     }
 
     private void observeGame(String... params) throws Exception {

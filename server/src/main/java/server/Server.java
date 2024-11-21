@@ -6,10 +6,14 @@ import dataaccess.SqlDataAccess;
 import handler.Handler;
 import spark.*;
 import service.Service;
+import websocket.WebSocketHandler;
 
 public class Server {
 
     public SqlDataAccess dataAccess = null;
+
+    public Server(){
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -24,7 +28,10 @@ public class Server {
         }
 
         Service service = new Service(dataAccess);
-        Handler handler = new Handler(service);
+        var webSocketHandler = new WebSocketHandler();
+        Handler handler = new Handler(service, webSocketHandler);
+
+        Spark.webSocket("/ws",webSocketHandler);
 
         Spark.delete("/db", handler::clear); // Clear Database
         Spark.post("/user", handler::registerUser);

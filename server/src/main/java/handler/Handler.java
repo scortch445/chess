@@ -10,14 +10,17 @@ import server.ServerException;
 import service.Service;
 import spark.Request;
 import spark.Response;
+import websocket.WebSocketHandler;
 
 import java.util.Map;
 
 public class Handler {
     private final Service service;
+    private final WebSocketHandler webSocketHandler;
 
-    public Handler(Service service){
+    public Handler(Service service, WebSocketHandler webSocketHandler){
         this.service = service;
+        this.webSocketHandler = webSocketHandler;
     }
 
     public String clear(Request req, Response res){
@@ -167,9 +170,5 @@ public class Handler {
         }
     }
 
-
-    // X don't pass in a function, instead, let it pass if it succeeds
-    // Then I can shorten/simplify the repeated co de here
-    // Not gonna work, cuz it needs to try the function
 
 }

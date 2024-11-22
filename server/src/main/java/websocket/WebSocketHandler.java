@@ -1,5 +1,6 @@
 package websocket;
 
+import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -7,6 +8,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -16,10 +18,15 @@ public class WebSocketHandler {
     }
     @OnWebSocketError
     public void handleError(Throwable ex){
-        // TODO why does websocket throw an error with message null when the client disconnects?
-        if(ex.getMessage()!=null) {
+        // If the only error is that the client closed the connection, then ignore it
+        if(!Objects.equals(ex.getCause().getMessage(), "Connection reset by peer")) {
             System.err.println(ex.getMessage());
-            System.err.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
+    }
+
+    @OnWebSocketClose
+    public void close(Session session, int statusCode, String reason){
+
     }
 }

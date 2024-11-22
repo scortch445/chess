@@ -127,8 +127,11 @@ public class Service {
         }
     }
 
-    private int getNextGameID(){
-        return nextGameID++;
+    private int getNextGameID() throws ServerException {
+        while(dataAccess.getGame(nextGameID)!=null){
+            nextGameID++;
+        }
+        return nextGameID;
     }
 
 }

@@ -21,7 +21,7 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>(){
                 @Override
                 public void onMessage(String message){
-                    //System.out.println(message);
+                    System.out.println(message);
                 }
             });
         } catch(DeploymentException | IOException | URISyntaxException ex){
@@ -31,7 +31,12 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig){
-
+        try {
+session.getBasicRemote().sendText("Hi!");
+        } catch (Exception ex){
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     public void close() throws ResponseException {

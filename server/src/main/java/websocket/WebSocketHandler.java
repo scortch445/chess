@@ -1,6 +1,5 @@
 package websocket;
 
-import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -14,7 +13,9 @@ import java.util.Objects;
 public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
+        System.out.println(message);
 
+        session.getRemote().sendString("Hi back to you!");
     }
     @OnWebSocketError
     public void handleError(Throwable ex){

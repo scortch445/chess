@@ -16,11 +16,9 @@ import java.util.Map;
 
 public class Handler {
     private final Service service;
-    private final WebSocketHandler webSocketHandler;
 
-    public Handler(Service service, WebSocketHandler webSocketHandler){
+    public Handler(Service service){
         this.service = service;
-        this.webSocketHandler = webSocketHandler;
     }
 
     public String clear(Request req, Response res){

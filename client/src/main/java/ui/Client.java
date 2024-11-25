@@ -7,10 +7,11 @@ import model.GameData;
 import model.UserData;
 import request.JoinGameRequest;
 import websocket.WebSocketFacade;
+import websocket.commands.UserGameCommand;
 
 import java.util.*;
 
-import static ui.EscapeSequences.*;
+import static UI.EscapeSequences.*;
 
 public class Client {
     private enum State {
@@ -274,7 +275,12 @@ public class Client {
 
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Observing game...");
-
+        ws = new WebSocketFacade(server.baseUrl);
+        var command = new UserGameCommand(
+                UserGameCommand.CommandType.CONNECT,
+                authData.authToken(),
+                gameIDs[gameChosen-1]);
+        ws.sendCommand(command);
 
         state=State.INGAME;
         boardUI.draw(games.get(gameChosen - 1));

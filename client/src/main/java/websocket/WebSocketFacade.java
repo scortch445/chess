@@ -1,6 +1,7 @@
 package websocket;
 
 import http.ResponseException;
+import websocket.commands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -29,14 +30,18 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig){
+    public void sendCommand(UserGameCommand command){
         try {
-session.getBasicRemote().sendText("Hi!");
+            session.getBasicRemote().sendText(command.toJSON());
         } catch (Exception ex){
             System.err.println(ex.getMessage());
-            ex.printStackTrace();
+//            ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig){
+
     }
 
     public void close() throws ResponseException {

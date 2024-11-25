@@ -1,7 +1,6 @@
-import chess.*;
 import ui.Client;
 
-import static ui.EscapeSequences.*;
+import static UI.EscapeSequences.*;
 
 public class Main {
 

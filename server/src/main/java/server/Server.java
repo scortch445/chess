@@ -28,8 +28,8 @@ public class Server {
         }
 
         Service service = new Service(dataAccess);
-        var webSocketHandler = new WebSocketHandler();
-        Handler handler = new Handler(service, webSocketHandler);
+        var webSocketHandler = new WebSocketHandler(service);
+        Handler handler = new Handler(service);
 
         Spark.webSocket("/ws",webSocketHandler);
 

@@ -1,4 +1,5 @@
 package service;
+import UI.EscapeSequences;
 import chess.ChessGame;
 import dataaccess.DataAccess;
 import model.AuthData;
@@ -11,6 +12,7 @@ import server.ServerException;
 import server.UnauthorizedRequest;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Service {
@@ -111,6 +113,18 @@ public class Service {
                         game.game());
                 dataAccess.saveGame(newGame);
             }
+        }
+    }
+
+    public String getRole(int gameID, String authToken) throws ServerException{
+        String username = dataAccess.getAuth(authToken).username();
+        var game = dataAccess.getGame(gameID);
+        if(Objects.equals(game.blackUsername(), username)){
+            return EscapeSequences.SET_TEXT_COLOR_MAGENTA+"BLACK";
+        } else if(Objects.equals(game.whiteUsername(), username)){
+            return EscapeSequences.SET_TEXT_COLOR_GREEN+"WHITE";
+        } else{
+            return EscapeSequences.SET_TEXT_COLOR_BLUE+"OBSERVER";
         }
     }
 

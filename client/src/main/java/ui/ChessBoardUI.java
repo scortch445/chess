@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static ui.EscapeSequences.*;
+import static UI.EscapeSequences.*;
 
 public class ChessBoardUI {
 

@@ -261,9 +261,14 @@ public class Client {
         var request = new JoinGameRequest(color,gameIDs[gameChosen-1],authData.authToken());
 
         server.joinGame(request);
+        ws = new WebSocketFacade(server.baseUrl);
+        var command = new UserGameCommand(
+                UserGameCommand.CommandType.CONNECT,
+                authData.authToken(),
+                gameIDs[gameChosen-1]);
+        ws.sendCommand(command);
         state = State.INGAME;
         boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
-        ws = new WebSocketFacade(server.baseUrl);
     }
 
     private void observeGame(String... params) throws Exception {

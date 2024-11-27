@@ -13,7 +13,7 @@ public class ConnectionManager {
             ConcurrentHashMap<String, Connection>> connections = new ConcurrentHashMap<>();
 
     public void add(int gameID, String authToken, Session session) {
-        if(!connections.contains(gameID)){
+        if(!connections.containsKey(gameID)){
             connections.put(gameID,new ConcurrentHashMap<>());
         }
         var connection = new Connection(authToken, session);

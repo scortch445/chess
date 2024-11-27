@@ -8,7 +8,10 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.Service;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
+import UI.EscapeSequences;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -29,31 +32,37 @@ public class WebSocketHandler {
         UserGameCommand command = null;
         try{
             command = new Gson().fromJson(message, UserGameCommand.class);
+
+            switch(Objects.requireNonNull(command).getCommandType()){
+                case CONNECT:
+                    var msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                    connections.add(command.getGameID(),command.getAuthToken(),session);
+                    // Add functionality to call service and check which role the user is
+                    var role = service.getRole(command.getGameID(), command.getAuthToken());
+                    var notification = new NotificationMessage(
+                            EscapeSequences.SET_TEXT_COLOR_WHITE+
+                                    service.getUsername(command.getAuthToken())+
+                                    " has joined the game as "+role);
+                    connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
+
+                    session.getRemote().sendString(msg.toJSON());
+                    break;
+                case MAKE_MOVE:
+                    break;
+                case LEAVE:
+                    break;
+                case RESIGN:
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected command: " + command.getCommandType());
+            }
+
+            session.getRemote().sendString("Hi back to you!");
         } catch (Exception ex){
-            // Send back ErrorMessage
+            session.getRemote().sendString(new ErrorMessage(ex.getMessage()).toJSON());
         }
 
-        switch(Objects.requireNonNull(command).getCommandType()){
-            case CONNECT:
-                var msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                connections.add(command.getGameID(),command.getAuthToken(),session);
-                // Add functionality to call service and check which role the user is
-                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
 
-                session.getRemote().sendString(msg.toJSON());
-                break;
-            case MAKE_MOVE:
-                break;
-            case LEAVE:
-                break;
-            case RESIGN:
-                break;
-            default:
-                throw new IllegalStateException("Unexpected command: " + command.getCommandType());
-        }
-
-        session.getRemote().sendString("Hi back to you!");
     }
     @OnWebSocketError
     public void handleError(Throwable ex){

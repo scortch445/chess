@@ -127,6 +127,9 @@ public class Service {
             return EscapeSequences.SET_TEXT_COLOR_BLUE+"OBSERVER";
         }
     }
+    public String getUsername(String authToken) throws ServerException{
+        return dataAccess.getAuth(authToken).username();
+    }
 
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();

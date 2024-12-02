@@ -19,13 +19,11 @@ import static UI.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
 public class WebSocketFacade extends Endpoint {
     private final Session session;
     private final ChessBoardUI boardUI;
-    private final ChessGame.TeamColor role;
 
 
     public WebSocketFacade(String url, ChessGame.TeamColor role) throws ResponseException {
         try{
             boardUI = new ChessBoardUI();
-            this.role = role;
 
             url = url.replace("http","ws");
             URI socketURI = new URI(url+"/ws");
@@ -36,16 +34,16 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                     @Override
                     public void onMessage(String message) {
-                    var msg = new Gson().fromJson(message, ServerMessage.class);
-                    if (msg.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-                        var gameData = new Gson().fromJson(message, LoadGameMessage.class).game;
-                        boardUI.draw(gameData,role);
-                    } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-                        String notification = new Gson().fromJson(message, NotificationMessage.class).message;
-                        System.out.println(notification);
-                        System.out.println();
-                    }
-                    System.out.print("\n" + SET_TEXT_COLOR_LIGHT_GREY + ">>> ");
+                        var msg = new Gson().fromJson(message, ServerMessage.class);
+                        if (msg.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                            var gameData = new Gson().fromJson(message, LoadGameMessage.class).game;
+                            boardUI.draw(gameData,role);
+                        } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+                            String notification = new Gson().fromJson(message, NotificationMessage.class).message;
+                            System.out.println(notification);
+                            System.out.println();
+                        }
+                        System.out.print("\n" + SET_TEXT_COLOR_LIGHT_GREY + ">>> ");
                 }
             });
         } catch(DeploymentException | IOException | URISyntaxException ex){

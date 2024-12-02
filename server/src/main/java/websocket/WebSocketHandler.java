@@ -33,6 +33,8 @@ public class WebSocketHandler {
         UserGameCommand command = null;
         try{
             command = new Gson().fromJson(message, UserGameCommand.class);
+            var role = service.getRole(command.getGameID(), command.getAuthToken());
+            NotificationMessage notification;
 
             switch(Objects.requireNonNull(command).getCommandType()){
                 case CONNECT:
@@ -40,8 +42,7 @@ public class WebSocketHandler {
                     session.getRemote().sendString(msg.toJSON());
                     connections.add(command.getGameID(),command.getAuthToken(),session);
                     // Add functionality to call service and check which role the user is
-                    var role = service.getRole(command.getGameID(), command.getAuthToken());
-                    var notification = new NotificationMessage(
+                    notification = new NotificationMessage(
                             EscapeSequences.SET_TEXT_COLOR_WHITE+
                                     service.getUsername(command.getAuthToken())+
                                     " has joined the game as "+role);
@@ -51,9 +52,13 @@ public class WebSocketHandler {
                 case MAKE_MOVE:
                     break;
                 case LEAVE:
-                    // TODO remove role from database
-                    // TODO broadcast that player has left
-                    // TODO remove player from list of websocket connections
+                    service.leaveGame(command.getGameID(), command.getAuthToken());
+                    notification = new NotificationMessage(
+                            EscapeSequences.SET_TEXT_COLOR_WHITE+
+                                    service.getUsername(command.getAuthToken())+
+                                    " was "+role+EscapeSequences.SET_TEXT_COLOR_WHITE+" and has left the game");
+                    connections.broadcast(command.getGameID(), command.getAuthToken(), notification);
+                    connections.remove(command.getGameID(), command.getAuthToken());
                     break;
                 case RESIGN:
                     break;

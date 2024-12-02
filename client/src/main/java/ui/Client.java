@@ -308,6 +308,8 @@ public class Client {
         var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE,
                 authData.authToken(), currentGameID);
         ws.sendCommand(command);
+
+        state=State.POSTLOGIN;
     }
 
 }

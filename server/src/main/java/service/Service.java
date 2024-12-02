@@ -135,9 +135,16 @@ public class Service {
     }
     public void leaveGame(int gameID, String authToken) throws ServerException{
         String username = getUsername(authToken);
-        var updatedGame = dataAccess.getGame(gameID);
-        if(Objects.equals(updatedGame.whiteUsername(), username)){
-            //TODO finish this out to nullify white or black user if matches
+        var game = dataAccess.getGame(gameID);
+        GameData updatedGame;
+        if(Objects.equals(game.whiteUsername(), username)){
+            updatedGame = new GameData(
+                    game.gameID(),null,game.blackUsername(),game.gameName(),game.game());
+        } else if(Objects.equals(game.blackUsername(), username)){
+            updatedGame = new GameData(
+                    game.gameID(),game.whiteUsername(),null,game.gameName(),game.game());
+        } else{
+            updatedGame = game;
         }
         dataAccess.saveGame(updatedGame);
     }

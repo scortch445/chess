@@ -7,6 +7,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.Service;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -16,6 +17,7 @@ import UI.EscapeSequences;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 @WebSocket
 public class WebSocketHandler {
@@ -50,6 +52,15 @@ public class WebSocketHandler {
 
                     break;
                 case MAKE_MOVE:
+                    var move = new Gson().fromJson(message, MakeMoveCommand.class).getChessMove();
+                    service.makeMove(move, command.getGameID(), command.getAuthToken());
+                    var loadGameMessage = new LoadGameMessage(service.getGame(command.getGameID()));
+                    connections.broadcast(command.getGameID(),null,loadGameMessage);
+                    notification = new NotificationMessage(
+                            EscapeSequences.SET_TEXT_COLOR_WHITE+
+                                    service.getUsername(command.getAuthToken())+
+                                    " has made the move: "+move);
+                    connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
                     break;
                 case LEAVE:
                     service.leaveGame(command.getGameID(), command.getAuthToken());
@@ -72,11 +83,13 @@ public class WebSocketHandler {
 
     }
     @OnWebSocketError
-    public void handleError(Throwable ex){
+    public void handleError(Session session, Throwable ex){
         // If the only error is that the client closed the connection, then ignore it
         if(!Objects.equals(ex.getCause().getMessage(), "Connection reset by peer")) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
+        } else if(ex instanceof TimeoutException){
+
         }
     }
 

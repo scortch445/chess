@@ -29,6 +29,7 @@ public class WebSocketFacade extends Endpoint {
             URI socketURI = new URI(url+"/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            container.setDefaultMaxSessionIdleTimeout(600000); // Set the timeout to 10 minutes
             this.session = container.connectToServer(this,socketURI);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {

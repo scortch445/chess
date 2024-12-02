@@ -1,6 +1,8 @@
 package service;
 import UI.EscapeSequences;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.DataAccess;
 import model.AuthData;
 import model.GameData;
@@ -147,6 +149,25 @@ public class Service {
             updatedGame = game;
         }
         dataAccess.saveGame(updatedGame);
+    }
+
+    public void makeMove(ChessMove move, int gameID, String authToken) throws Exception {
+        var gameData = this.getGame(gameID);
+        var username = this.getUsername(authToken);
+        if(Objects.equals(getRole(gameID, authToken), EscapeSequences.SET_TEXT_COLOR_BLUE + "OBSERVER")){
+            throw new InvalidMoveException("You are an observer! You cannot make a move");
+        }
+        var userRole =
+                (Objects.equals(gameData.whiteUsername(), username)) ? ChessGame.TeamColor.WHITE
+                        : ChessGame.TeamColor.BLACK;
+        if(gameData.game().getTeamTurn()!=userRole){
+            throw new InvalidRequest("It's not your turn!");
+        }
+        gameData.game().makeMove(move);
+
+        // TODO Check check, checkmate, and stalemate
+
+        dataAccess.saveGame(gameData);
     }
 
     private AuthData createAuth(String username){

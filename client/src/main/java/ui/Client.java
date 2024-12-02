@@ -24,16 +24,14 @@ public class Client {
     private WebSocketFacade ws;
 
     private State state;
-    private Scanner scanner;
+    private final Scanner scanner;
     private boolean running;
 
     private AuthData authData;
 
     private int[] gameIDs;
-    private ChessBoardUI boardUI;
 
     private ArrayList<GameData> games;
-    private GameData gameData;
 
     public Client(int port){
         state = State.PRELOGIN;
@@ -42,7 +40,6 @@ public class Client {
         this.server = new ServerFacade(port);
 
         running = true;
-        boardUI = new ChessBoardUI();
     }
 
 
@@ -74,7 +71,7 @@ public class Client {
     }
 
     private void help(){
-        Map commands = Map.of();
+        Map<Object, Object> commands = Map.of();
         switch(state){
             case State.PRELOGIN -> commands = Map.of(
                     "help","list possible commands",
@@ -261,14 +258,13 @@ public class Client {
         var request = new JoinGameRequest(color,gameIDs[gameChosen-1],authData.authToken());
 
         server.joinGame(request);
-        ws = new WebSocketFacade(server.baseUrl);
+        ws = new WebSocketFacade(server.baseUrl, color);
         var command = new UserGameCommand(
                 UserGameCommand.CommandType.CONNECT,
                 authData.authToken(),
                 gameIDs[gameChosen-1]);
         ws.sendCommand(command);
         state = State.INGAME;
-        boardUI.draw(games.get(Integer.parseInt(params[0]) - 1));
     }
 
     private void observeGame(String... params) throws Exception {
@@ -280,7 +276,7 @@ public class Client {
 
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Observing game...");
-        ws = new WebSocketFacade(server.baseUrl);
+        ws = new WebSocketFacade(server.baseUrl, null);
         var command = new UserGameCommand(
                 UserGameCommand.CommandType.CONNECT,
                 authData.authToken(),
@@ -288,7 +284,6 @@ public class Client {
         ws.sendCommand(command);
 
         state=State.INGAME;
-        boardUI.draw(games.get(gameChosen - 1));
     }
 
 }

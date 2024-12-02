@@ -32,15 +32,18 @@ public class ChessBoardUI {
             " 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "
     };
 
-    public void draw(GameData data){
+    public void draw(GameData data, ChessGame.TeamColor role){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         var game = data.game();
 
-        out.print(ERASE_SCREEN);
-
-        drawChessBoard(out, game, ChessGame.TeamColor.BLACK);
         out.println();
-        drawChessBoard(out,game, ChessGame.TeamColor.WHITE);
+        out.print(ERASE_SCREEN);
+        // If an observer, observe from the white POV
+        if(role==null) {
+            role= ChessGame.TeamColor.WHITE;
+        }
+        drawChessBoard(out, game, role);
+        out.println();
 
         clearFormat(out);
     }

@@ -37,6 +37,7 @@ public class WebSocketHandler {
             switch(Objects.requireNonNull(command).getCommandType()){
                 case CONNECT:
                     var msg = new LoadGameMessage(service.getGame(command.getGameID()));
+                    session.getRemote().sendString(msg.toJSON());
                     connections.add(command.getGameID(),command.getAuthToken(),session);
                     // Add functionality to call service and check which role the user is
                     var role = service.getRole(command.getGameID(), command.getAuthToken());
@@ -46,7 +47,6 @@ public class WebSocketHandler {
                                     " has joined the game as "+role);
                     connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
 
-                    session.getRemote().sendString(msg.toJSON());
                     break;
                 case MAKE_MOVE:
                     break;

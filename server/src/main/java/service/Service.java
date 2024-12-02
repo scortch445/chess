@@ -130,6 +130,9 @@ public class Service {
     public String getUsername(String authToken) throws ServerException{
         return dataAccess.getAuth(authToken).username();
     }
+    public GameData getGame(int gameID) throws ServerException{
+        return dataAccess.getGame(gameID);
+    }
 
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();

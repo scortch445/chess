@@ -9,6 +9,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.Service;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import UI.EscapeSequences;
@@ -35,7 +36,7 @@ public class WebSocketHandler {
 
             switch(Objects.requireNonNull(command).getCommandType()){
                 case CONNECT:
-                    var msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                    var msg = new LoadGameMessage(service.getGame(command.getGameID()));
                     connections.add(command.getGameID(),command.getAuthToken(),session);
                     // Add functionality to call service and check which role the user is
                     var role = service.getRole(command.getGameID(), command.getAuthToken());
@@ -56,8 +57,6 @@ public class WebSocketHandler {
                 default:
                     throw new IllegalStateException("Unexpected command: " + command.getCommandType());
             }
-
-            session.getRemote().sendString("Hi back to you!");
         } catch (Exception ex){
             session.getRemote().sendString(new ErrorMessage(ex.getMessage()).toJSON());
         }

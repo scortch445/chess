@@ -51,6 +51,9 @@ public class WebSocketHandler {
                 case MAKE_MOVE:
                     break;
                 case LEAVE:
+                    // TODO remove role from database
+                    // TODO broadcast that player has left
+                    // TODO remove player from list of websocket connections
                     break;
                 case RESIGN:
                     break;

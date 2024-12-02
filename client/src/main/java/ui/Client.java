@@ -30,6 +30,7 @@ public class Client {
     private AuthData authData;
 
     private int[] gameIDs;
+    private int currentGameID;
 
     private ArrayList<GameData> games;
 
@@ -62,6 +63,7 @@ public class Client {
                     case "join" -> joinGame(params);
                     case "observe" -> observeGame(params);
                     case "quit" -> quit();
+                    case "leave" -> leave();
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
@@ -89,7 +91,7 @@ public class Client {
             );
             case State.INGAME -> commands = Map.of(
                     "help","list possible commands",
-                    "quit","exits the program"
+                    "leave","the game (and vacate your spot)"
             );
         }
         for(var key : commands.keySet()){
@@ -107,6 +109,18 @@ public class Client {
 
     private void assumePostLogin(){
         if(state!=State.POSTLOGIN){
+            throw new InvalidCommandException();
+        }
+    }
+
+    private void assumeNotInGame(){
+        if(state==State.INGAME){
+            throw new InvalidCommandException();
+        }
+    }
+
+    private void assumeInGame(){
+        if(state!=State.INGAME){
             throw new InvalidCommandException();
         }
     }
@@ -148,7 +162,8 @@ public class Client {
     }
 
     private void quit() throws Exception {
-        if(state!=State.PRELOGIN) {
+        assumeNotInGame();
+        if(state==State.PRELOGIN) {
             logout();
         }
         if (state==State.INGAME){
@@ -242,6 +257,7 @@ public class Client {
         assumeGamesNotNull();
 
         int gameChosen = assumeValidGameChoice(params[0]);
+        currentGameID = gameIDs[gameChosen-1];
 
         ChessGame.TeamColor color;
 
@@ -255,14 +271,14 @@ public class Client {
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Joining game...");
 
-        var request = new JoinGameRequest(color,gameIDs[gameChosen-1],authData.authToken());
+        var request = new JoinGameRequest(color,currentGameID,authData.authToken());
 
         server.joinGame(request);
         ws = new WebSocketFacade(server.baseUrl, color);
         var command = new UserGameCommand(
                 UserGameCommand.CommandType.CONNECT,
                 authData.authToken(),
-                gameIDs[gameChosen-1]);
+                currentGameID);
         ws.sendCommand(command);
         state = State.INGAME;
     }
@@ -284,6 +300,14 @@ public class Client {
         ws.sendCommand(command);
 
         state=State.INGAME;
+    }
+
+    private void leave() throws Exception {
+        assumeInGame();
+
+        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE,
+                authData.authToken(), currentGameID);
+        ws.sendCommand(command);
     }
 
 }

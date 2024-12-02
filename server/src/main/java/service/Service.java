@@ -133,6 +133,14 @@ public class Service {
     public GameData getGame(int gameID) throws ServerException{
         return dataAccess.getGame(gameID);
     }
+    public void leaveGame(int gameID, String authToken) throws ServerException{
+        String username = getUsername(authToken);
+        var updatedGame = dataAccess.getGame(gameID);
+        if(Objects.equals(updatedGame.whiteUsername(), username)){
+            //TODO finish this out to nullify white or black user if matches
+        }
+        dataAccess.saveGame(updatedGame);
+    }
 
     private AuthData createAuth(String username){
         String authToken = UUID.randomUUID().toString();

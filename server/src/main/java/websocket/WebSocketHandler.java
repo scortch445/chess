@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -54,13 +55,36 @@ public class WebSocketHandler {
                 case MAKE_MOVE:
                     var move = new Gson().fromJson(message, MakeMoveCommand.class).getChessMove();
                     service.makeMove(move, command.getGameID(), command.getAuthToken());
-                    var loadGameMessage = new LoadGameMessage(service.getGame(command.getGameID()));
+                    var updatedGame = service.getGame(command.getGameID());
+                    var loadGameMessage = new LoadGameMessage(updatedGame);
                     connections.broadcast(command.getGameID(),null,loadGameMessage);
                     notification = new NotificationMessage(
                             EscapeSequences.SET_TEXT_COLOR_WHITE+
                                     service.getUsername(command.getAuthToken())+
                                     " has made the move: "+move);
                     connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
+                    if(updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_GREEN + updatedGame.whiteUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in checkmate!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    } else if(updatedGame.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_MAGENTA + updatedGame.blackUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in checkmate!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    }
+                    if(updatedGame.game().isInStalemate(ChessGame.TeamColor.WHITE)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_GREEN + updatedGame.whiteUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in stalemate!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    } else if(updatedGame.game().isInStalemate(ChessGame.TeamColor.BLACK)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_MAGENTA + updatedGame.blackUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in stalemate!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    }
                     break;
                 case LEAVE:
                     service.leaveGame(command.getGameID(), command.getAuthToken());

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import http.ResponseException;
 import ui.ChessBoardUI;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -15,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static UI.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+import static UI.EscapeSequences.SET_TEXT_COLOR_RED;
 
 public class WebSocketFacade extends Endpoint {
     private final Session session;
@@ -42,6 +44,10 @@ public class WebSocketFacade extends Endpoint {
                         } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
                             String notification = new Gson().fromJson(message, NotificationMessage.class).message;
                             System.out.println(notification);
+                            System.out.println();
+                        } else if(msg.getServerMessageType()==ServerMessage.ServerMessageType.ERROR){
+                            var errorMsg = new Gson().fromJson(message, ErrorMessage.class).errorMessage;
+                            System.out.println(SET_TEXT_COLOR_RED+errorMsg);
                             System.out.println();
                         }
                         System.out.print("\n" + SET_TEXT_COLOR_LIGHT_GREY + ">>> ");

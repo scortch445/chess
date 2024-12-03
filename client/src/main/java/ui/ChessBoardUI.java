@@ -13,6 +13,17 @@ import static UI.EscapeSequences.*;
 
 public class ChessBoardUI {
 
+    public static Map<Character,Integer> COL_LETTER_TO_INT = Map.of(
+            'a',1,
+            'b',2,
+            'c',3,
+            'd',4,
+            'e',5,
+            'f',6,
+            'g',7,
+            'h',8
+    );
+
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
 
@@ -25,10 +36,10 @@ public class ChessBoardUI {
             ChessPiece.PieceType.PAWN,BLACK_PAWN
     );
 
-    String[] colHeaders = {
+    private final String[] COL_HEADERS = {
             EMPTY," a ","  b "," c ","  d "," e ","  f "," g ","  h ",EMPTY
     };
-    String[] rowHeaders = {
+    private final String[] ROW_HEADERS = {
             " 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "
     };
 
@@ -89,7 +100,7 @@ public class ChessBoardUI {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
 
-        for(var string : colHeaders){
+        for(var string : COL_HEADERS){
             out.print(string);
         }
 
@@ -101,7 +112,7 @@ public class ChessBoardUI {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
 
-        out.print(rowHeaders[row]);
+        out.print(ROW_HEADERS[row]);
 
         clearFormat(out);
     }

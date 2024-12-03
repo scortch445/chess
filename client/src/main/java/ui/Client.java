@@ -1,12 +1,15 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import http.ServerFacade;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import request.JoinGameRequest;
 import websocket.WebSocketFacade;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 
 import java.util.*;
@@ -64,6 +67,7 @@ public class Client {
                     case "observe" -> observeGame(params);
                     case "quit" -> quit();
                     case "leave" -> leave();
+                    case "move" -> makeMove(params);
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
@@ -91,7 +95,8 @@ public class Client {
             );
             case State.INGAME -> commands = Map.of(
                     "help","list possible commands",
-                    "leave","the game (and vacate your spot)"
+                    "leave","the game (and vacate your spot)",
+                    "move <STARTING_POS> <END_POS>","enter positions as A1"
             );
         }
         for(var key : commands.keySet()){
@@ -158,6 +163,29 @@ public class Client {
     private void assumeParams(int expected, String... params){
         if(params.length !=expected ){
             throw new InvalidParameterException();
+        }
+    }
+
+    private void assumePositionParams(String... params){
+        assumeParams(2,params);
+
+        for(var param : params){
+            if(param.length() != 2 || // Make sure the position only has two characters
+                    // Make sure the Column is between A and H
+                    !ChessBoardUI.COL_LETTER_TO_INT.containsKey(param.charAt(0))){
+                throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                        " is not a valid position!");
+            }
+            try{
+                var row = Character.getNumericValue(param.charAt(1));
+                if(row<1 || row > 8){
+                    throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                            " is not a valid position!");
+                }
+            } catch (Exception e) {
+                throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                        " is not a valid position!");
+            }
         }
     }
 
@@ -310,6 +338,19 @@ public class Client {
         ws.sendCommand(command);
 
         state=State.POSTLOGIN;
+    }
+
+    private void makeMove(String... params) throws Exception {
+        assumeInGame();
+        assumePositionParams(params);
+        ChessPosition start = new ChessPosition(Character.getNumericValue(params[0].charAt(1)),
+                ChessBoardUI.COL_LETTER_TO_INT.get(params[0].charAt(0)));
+        ChessPosition end = new ChessPosition(Character.getNumericValue(params[1].charAt(1)),
+                ChessBoardUI.COL_LETTER_TO_INT.get(params[1].charAt(0)));
+        // TODO allow promotion pieces to be entered
+        ChessMove move = new ChessMove(start,end,null);
+        var command = new MakeMoveCommand(authData.authToken(), currentGameID,move);
+        ws.sendCommand(command);
     }
 
 }

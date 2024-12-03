@@ -10,4 +10,8 @@ public class InvalidParameterException extends RuntimeException {
                 "Try typing "+ SET_TEXT_COLOR_GREEN+"help"
                 + SET_TEXT_COLOR_LIGHT_GREY+ " for which parameters are needed");
     }
+
+    public InvalidParameterException(String msg) {
+        super(msg);
+    }
 }

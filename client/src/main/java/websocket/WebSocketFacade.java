@@ -3,6 +3,7 @@ package websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import http.ResponseException;
+import model.GameData;
 import ui.ChessBoardUI;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -21,11 +22,14 @@ import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 public class WebSocketFacade extends Endpoint {
     private final Session session;
     private final ChessBoardUI boardUI;
+    public GameData currentGameData;
+    public ChessGame.TeamColor role;
 
 
     public WebSocketFacade(String url, ChessGame.TeamColor role) throws ResponseException {
         try{
             boardUI = new ChessBoardUI();
+            this.role = role;
 
             url = url.replace("http","ws");
             URI socketURI = new URI(url+"/ws");
@@ -40,6 +44,7 @@ public class WebSocketFacade extends Endpoint {
                         var msg = new Gson().fromJson(message, ServerMessage.class);
                         if (msg.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                             var gameData = new Gson().fromJson(message, LoadGameMessage.class).game;
+                            currentGameData=gameData;
                             boardUI.draw(gameData,role);
                         } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
                             String notification = new Gson().fromJson(message, NotificationMessage.class).message;

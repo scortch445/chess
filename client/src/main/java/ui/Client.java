@@ -31,6 +31,8 @@ public class Client {
     private final Scanner scanner;
     private boolean running;
 
+    private ChessBoardUI boardUI;
+
     private AuthData authData;
 
     private int[] gameIDs;
@@ -43,6 +45,7 @@ public class Client {
         scanner = new Scanner(System.in);
 
         this.server = new ServerFacade(port);
+        this.boardUI = new ChessBoardUI();
 
         running = true;
     }
@@ -70,6 +73,7 @@ public class Client {
                     case "leave" -> leave();
                     case "move" -> makeMove(params);
                     case "resign" -> resign();
+                    case "redraw" -> redraw();
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
@@ -99,7 +103,9 @@ public class Client {
                     "help","list possible commands",
                     "leave","the game (and vacate your spot)",
                     "move <STARTING_POS> <END_POS> {PROMOTION_PIECE}","enter positions as A1",
-                    "resign","if you are a player"
+                    "resign","if you are a player",
+                    "redraw","the chess board",
+                    "highlight","the possible moves of a given piece"
             );
         }
         for(var key : commands.keySet()){
@@ -384,6 +390,11 @@ public class Client {
             var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authData.authToken(), currentGameID);
             ws.sendCommand(command);
         }
+    }
+
+    private void redraw() throws Exception {
+        assumeInGame();
+        boardUI.draw(ws.currentGameData,ws.role);
     }
 
 }

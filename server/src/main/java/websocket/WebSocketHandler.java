@@ -62,6 +62,17 @@ public class WebSocketHandler {
                                     service.getUsername(command.getAuthToken())+
                                     " has made the move: "+move);
                     connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
+                    if(updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_GREEN + updatedGame.whiteUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in check!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    } else if(updatedGame.game().isInCheck(ChessGame.TeamColor.BLACK)){
+                        notification = new NotificationMessage(
+                                EscapeSequences.SET_TEXT_COLOR_MAGENTA + updatedGame.blackUsername()
+                                        + EscapeSequences.SET_TEXT_COLOR_WHITE + " is now in check!");
+                        connections.broadcast(command.getGameID(),null,notification);
+                    }
                     if(updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                         notification = new NotificationMessage(
                                 EscapeSequences.SET_TEXT_COLOR_GREEN + updatedGame.whiteUsername()

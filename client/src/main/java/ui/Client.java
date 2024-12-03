@@ -15,7 +15,7 @@ import websocket.commands.UserGameCommand;
 
 import java.util.*;
 
-import static UI.EscapeSequences.*;
+import static ui.EscapeSequences.*;
 
 public class Client {
     private enum State {
@@ -364,7 +364,6 @@ public class Client {
                 ChessBoardUI.COL_LETTER_TO_INT.get(params[0].charAt(0)));
         ChessPosition end = new ChessPosition(Character.getNumericValue(params[1].charAt(1)),
                 ChessBoardUI.COL_LETTER_TO_INT.get(params[1].charAt(0)));
-        // TODO allow promotion pieces to be entered
         var promoPiece = params.length==3 ? ChessPiece.PieceType.valueOf(params[2].toUpperCase()) : null;
         ChessMove move = new ChessMove(start,end,promoPiece);
         var command = new MakeMoveCommand(authData.authToken(), currentGameID,move);

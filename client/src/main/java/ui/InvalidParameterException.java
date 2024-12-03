@@ -1,7 +1,7 @@
 package ui;
 
-import static UI.EscapeSequences.*;
-import static UI.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
 
 public class InvalidParameterException extends RuntimeException {
     public InvalidParameterException() {

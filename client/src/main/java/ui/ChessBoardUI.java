@@ -9,11 +9,11 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static UI.EscapeSequences.*;
+import static ui.EscapeSequences.*;
 
 public class ChessBoardUI {
 
-    public static Map<Character,Integer> COL_LETTER_TO_INT = Map.of(
+    public static final Map<Character,Integer> COL_LETTER_TO_INT = Map.of(
             'a',1,
             'b',2,
             'c',3,
@@ -36,10 +36,10 @@ public class ChessBoardUI {
             ChessPiece.PieceType.PAWN,BLACK_PAWN
     );
 
-    private final String[] COL_HEADERS = {
+    private static final String[] COL_HEADERS = {
             EMPTY," a ","  b "," c ","  d "," e ","  f "," g ","  h ",EMPTY
     };
-    private final String[] ROW_HEADERS = {
+    private static final String[] ROW_HEADERS = {
             " 1 "," 2 "," 3 "," 4 "," 5 "," 6 "," 7 "," 8 "
     };
 

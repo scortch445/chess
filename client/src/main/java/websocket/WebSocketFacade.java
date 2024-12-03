@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static UI.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
-import static UI.EscapeSequences.SET_TEXT_COLOR_RED;
+import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 
 public class WebSocketFacade extends Endpoint {
     private final Session session;

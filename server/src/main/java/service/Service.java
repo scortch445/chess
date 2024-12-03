@@ -1,5 +1,5 @@
 package service;
-import UI.EscapeSequences;
+import ui.EscapeSequences;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;

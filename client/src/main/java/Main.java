@@ -1,6 +1,6 @@
 import ui.Client;
 
-import static UI.EscapeSequences.*;
+import static ui.EscapeSequences.*;
 
 public class Main {
 

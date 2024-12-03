@@ -13,8 +13,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
-import UI.EscapeSequences;
+import ui.EscapeSequences;
 
 import java.io.IOException;
 import java.util.Objects;

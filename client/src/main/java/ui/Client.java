@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import http.ServerFacade;
 import model.AuthData;
@@ -96,7 +97,7 @@ public class Client {
             case State.INGAME -> commands = Map.of(
                     "help","list possible commands",
                     "leave","the game (and vacate your spot)",
-                    "move <STARTING_POS> <END_POS>","enter positions as A1"
+                    "move <STARTING_POS> <END_POS> {PROMOTION_PIECE}","enter positions as A1"
             );
         }
         for(var key : commands.keySet()){
@@ -166,10 +167,15 @@ public class Client {
         }
     }
 
-    private void assumePositionParams(String... params){
-        assumeParams(2,params);
+    private void assumeValidMoveParams(String... params){
+        if(params.length!=2 && params.length!=3){
+            throw new InvalidParameterException();
+        }
 
         for(var param : params){
+            if(params.length == 3 && Objects.equals(param, params[2])){
+                break;
+            }
             if(param.length() != 2 || // Make sure the position only has two characters
                     // Make sure the Column is between A and H
                     !ChessBoardUI.COL_LETTER_TO_INT.containsKey(param.charAt(0))){
@@ -185,6 +191,17 @@ public class Client {
             } catch (Exception e) {
                 throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
                         " is not a valid position!");
+            }
+        }
+
+        if(params.length==3){
+            try{
+                var upperCasePiece = params[2].toUpperCase();
+                ChessPiece.PieceType.valueOf(upperCasePiece);
+            } catch(Throwable e){
+                throw new InvalidParameterException(SET_TEXT_COLOR_RED +
+                        params[2]+" is not a valid piece!");
+                // TODO provide a list of options of pieces
             }
         }
     }
@@ -342,13 +359,14 @@ public class Client {
 
     private void makeMove(String... params) throws Exception {
         assumeInGame();
-        assumePositionParams(params);
+        assumeValidMoveParams(params);
         ChessPosition start = new ChessPosition(Character.getNumericValue(params[0].charAt(1)),
                 ChessBoardUI.COL_LETTER_TO_INT.get(params[0].charAt(0)));
         ChessPosition end = new ChessPosition(Character.getNumericValue(params[1].charAt(1)),
                 ChessBoardUI.COL_LETTER_TO_INT.get(params[1].charAt(0)));
         // TODO allow promotion pieces to be entered
-        ChessMove move = new ChessMove(start,end,null);
+        var promoPiece = params.length==3 ? ChessPiece.PieceType.valueOf(params[2].toUpperCase()) : null;
+        ChessMove move = new ChessMove(start,end,promoPiece);
         var command = new MakeMoveCommand(authData.authToken(), currentGameID,move);
         ws.sendCommand(command);
     }

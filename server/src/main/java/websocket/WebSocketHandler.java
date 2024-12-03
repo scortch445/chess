@@ -32,7 +32,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        System.out.println(message);
+        // System.out.println(message);
         UserGameCommand command = null;
         try{
             command = new Gson().fromJson(message, UserGameCommand.class);

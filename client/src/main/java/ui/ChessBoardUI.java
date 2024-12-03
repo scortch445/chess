@@ -7,6 +7,7 @@ import model.GameData;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static ui.EscapeSequences.*;
@@ -59,6 +60,22 @@ public class ChessBoardUI {
         clearFormat(out);
     }
 
+    public void draw(GameData data, ChessGame.TeamColor role, ArrayList<ChessPosition> positionsToHighlight){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        var game = data.game();
+
+        out.println();
+        out.print(ERASE_SCREEN);
+        // If an observer, observe from the white POV
+        if(role==null) {
+            role= ChessGame.TeamColor.WHITE;
+        }
+        drawChessBoard(out, game, role, positionsToHighlight);
+        out.println();
+
+        clearFormat(out);
+    }
+
 
     private void drawChessBoard(PrintStream out, ChessGame game, ChessGame.TeamColor color) {
         drawColumnLabels(out);
@@ -70,6 +87,23 @@ public class ChessBoardUI {
         } else{
             for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
                 drawRow(out,boardRow,game);
+            }
+        }
+
+
+        drawColumnLabels(out);
+    }
+
+    private void drawChessBoard(PrintStream out, ChessGame game, ChessGame.TeamColor color, ArrayList<ChessPosition> positionsToHighlight) {
+        drawColumnLabels(out);
+
+        if(color== ChessGame.TeamColor.WHITE){
+            for (int boardRow = BOARD_SIZE_IN_SQUARES - 1; boardRow >= 0; --boardRow) {
+                drawRow(out,boardRow,game, positionsToHighlight);
+            }
+        } else{
+            for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+                drawRow(out,boardRow,game, positionsToHighlight);
             }
         }
 
@@ -89,6 +123,11 @@ public class ChessBoardUI {
     private void setGrey(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_LIGHT_GREY);
+    }
+
+    private void setYellow(PrintStream out){
+        out.print(SET_BG_COLOR_YELLOW);
+        out.print(SET_TEXT_COLOR_YELLOW);
     }
 
     private void clearFormat(PrintStream out) {
@@ -127,6 +166,36 @@ public class ChessBoardUI {
                 setGrey(out);
             }
             ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row + 1,boardCol + 1));
+
+
+            if(piece!=null){
+                printChessPiece(out, piece);
+            } else{
+                out.print(EMPTY);
+            }
+
+            clearFormat(out);
+        }
+
+        drawRowLabel(out,row);
+
+        out.println();
+    }
+
+    private void drawRow(PrintStream out, int row, ChessGame game, ArrayList<ChessPosition> positionsToHighlight){
+        drawRowLabel(out,row);
+
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            var pos = new ChessPosition(row+1,boardCol+1);
+            if (positionsToHighlight.contains(pos)) {
+                setYellow(out);
+            }
+            else if(isLightTile(row,boardCol)){
+                setWhite(out);
+            } else {
+                setGrey(out);
+            }
+            ChessPiece piece = game.getBoard().getPiece(pos);
 
 
             if(piece!=null){

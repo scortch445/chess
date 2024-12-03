@@ -153,6 +153,9 @@ public class Service {
 
     public void makeMove(ChessMove move, int gameID, String authToken) throws Exception {
         var gameData = this.getGame(gameID);
+        if(gameData.game().gameOver){
+            throw new InvalidRequest("Game is already over!");
+        }
         var username = this.getUsername(authToken);
         if(Objects.equals(getRole(gameID, authToken), EscapeSequences.SET_TEXT_COLOR_BLUE + "OBSERVER")){
             throw new InvalidMoveException("You are an observer! You cannot make a move");
@@ -171,12 +174,16 @@ public class Service {
     public void resign(String authToken, int gameID) throws Exception {
         var username = getUsername(authToken);
         var gameData = getGame(gameID);
+        if(gameData.game().gameOver){
+            throw new InvalidRequest("Game is already resigned!");
+        }
 
         if(!Objects.equals(username, gameData.whiteUsername())
-                || !Objects.equals(username, gameData.blackUsername())){
+                && !Objects.equals(username, gameData.blackUsername())){
             throw new InvalidRequest("You cannot resign as an observer!");
         }
-        // TODO lock game and save to database
+        gameData.game().gameOver=true;
+        dataAccess.saveGame(gameData);
 
     }
 

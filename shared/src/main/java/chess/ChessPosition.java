@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -9,6 +10,10 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
+
+    public static final char[] COL_LETTERS = {
+            'a','b','c','d','e','f','g','h'
+    };
 
     private int row;
     private int col;
@@ -80,6 +85,10 @@ public class ChessPosition {
     public boolean isInBounds(){
         return col > 0 && col <= 8
                 && row > 0 && row <= 8;
+    }
+
+    public static String getReadablePos(ChessPosition pos){
+        return COL_LETTERS[pos.getColumn()-1]+String.valueOf(pos.getRow());
     }
 
 }

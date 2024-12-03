@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -57,10 +58,13 @@ public class WebSocketHandler {
                     var updatedGame = service.getGame(command.getGameID());
                     var loadGameMessage = new LoadGameMessage(updatedGame);
                     connections.broadcast(command.getGameID(),null,loadGameMessage);
+                    var promoPiece = move.getPromotionPiece()==null ? "" : " "+move.getPromotionPiece().toString();
                     notification = new NotificationMessage(
                             EscapeSequences.SET_TEXT_COLOR_WHITE+
                                     service.getUsername(command.getAuthToken())+
-                                    " has made the move: "+move);
+                                    " has made the move: "+ ChessPosition.getReadablePos(move.getStartPosition()) +
+                                    " -> "+ChessPosition.getReadablePos(move.getEndPosition())+
+                                    promoPiece);
                     connections.broadcast(command.getGameID(),command.getAuthToken(),notification);
                     if(updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE)){
                         notification = new NotificationMessage(

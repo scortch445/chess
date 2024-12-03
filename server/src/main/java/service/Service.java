@@ -165,9 +165,19 @@ public class Service {
         }
         gameData.game().makeMove(move);
 
-        // TODO Check check, checkmate, and stalemate
-
         dataAccess.saveGame(gameData);
+    }
+
+    public void resign(String authToken, int gameID) throws Exception {
+        var username = getUsername(authToken);
+        var gameData = getGame(gameID);
+
+        if(!Objects.equals(username, gameData.whiteUsername())
+                || !Objects.equals(username, gameData.blackUsername())){
+            throw new InvalidRequest("You cannot resign as an observer!");
+        }
+        // TODO lock game and save to database
+
     }
 
     private AuthData createAuth(String username){

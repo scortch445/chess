@@ -96,6 +96,12 @@ public class WebSocketHandler {
                     connections.remove(command.getGameID(), command.getAuthToken());
                     break;
                 case RESIGN:
+                    service.resign(command.getAuthToken(),command.getGameID());
+                    notification = new NotificationMessage(
+                            EscapeSequences.SET_TEXT_COLOR_WHITE+
+                                    service.getUsername(command.getAuthToken())+
+                                    " was "+role+EscapeSequences.SET_TEXT_COLOR_WHITE+" and has resigned");
+                    connections.broadcast(command.getGameID(), null, notification);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected command: " + command.getCommandType());

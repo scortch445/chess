@@ -74,6 +74,7 @@ public class Client {
                     case "move" -> makeMove(params);
                     case "resign" -> resign();
                     case "redraw" -> redraw();
+                    case "highlight" -> highlight(params);
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
@@ -105,7 +106,7 @@ public class Client {
                     "move <STARTING_POS> <END_POS> {PROMOTION_PIECE}","enter positions as A1",
                     "resign","if you are a player",
                     "redraw","the chess board",
-                    "highlight","the possible moves of a given piece"
+                    "highlight <POS>","the possible moves of a piece at POS (enter as A1)"
             );
         }
         for(var key : commands.keySet()){
@@ -175,6 +176,25 @@ public class Client {
         }
     }
 
+    private void assumePosition(String param){
+        if(param.length() != 2 || // Make sure the position only has two characters
+                // Make sure the Column is between A and H
+                !ChessBoardUI.COL_LETTER_TO_INT.containsKey(param.charAt(0))){
+            throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                    " is not a valid position!");
+        }
+        try{
+            var row = Character.getNumericValue(param.charAt(1));
+            if(row<1 || row > 8){
+                throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                        " is not a valid position!");
+            }
+        } catch (Exception e) {
+            throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
+                    " is not a valid position!");
+        }
+    }
+
     private void assumeValidMoveParams(String... params){
         if(params.length!=2 && params.length!=3){
             throw new InvalidParameterException();
@@ -184,22 +204,7 @@ public class Client {
             if(params.length == 3 && Objects.equals(param, params[2])){
                 break;
             }
-            if(param.length() != 2 || // Make sure the position only has two characters
-                    // Make sure the Column is between A and H
-                    !ChessBoardUI.COL_LETTER_TO_INT.containsKey(param.charAt(0))){
-                throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
-                        " is not a valid position!");
-            }
-            try{
-                var row = Character.getNumericValue(param.charAt(1));
-                if(row<1 || row > 8){
-                    throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
-                            " is not a valid position!");
-                }
-            } catch (Exception e) {
-                throw new InvalidParameterException(SET_TEXT_COLOR_RED + param +
-                        " is not a valid position!");
-            }
+            assumePosition(param);
         }
 
         if(params.length==3){
@@ -343,6 +348,7 @@ public class Client {
         assumeGamesNotNull();
 
         int gameChosen = assumeValidGameChoice(params[0]);
+        currentGameID = gameIDs[gameChosen-1];
 
 
         System.out.println(SET_TEXT_COLOR_WHITE+"Observing game...");
@@ -369,10 +375,8 @@ public class Client {
     private void makeMove(String... params) throws Exception {
         assumeInGame();
         assumeValidMoveParams(params);
-        ChessPosition start = new ChessPosition(Character.getNumericValue(params[0].charAt(1)),
-                ChessBoardUI.COL_LETTER_TO_INT.get(params[0].charAt(0)));
-        ChessPosition end = new ChessPosition(Character.getNumericValue(params[1].charAt(1)),
-                ChessBoardUI.COL_LETTER_TO_INT.get(params[1].charAt(0)));
+        var start = convertToPosition(params[0]);
+        var end = convertToPosition(params[1]);
         var promoPiece = params.length==3 ? ChessPiece.PieceType.valueOf(params[2].toUpperCase()) : null;
         ChessMove move = new ChessMove(start,end,promoPiece);
         var command = new MakeMoveCommand(authData.authToken(), currentGameID,move);
@@ -395,6 +399,27 @@ public class Client {
     private void redraw() throws Exception {
         assumeInGame();
         boardUI.draw(ws.currentGameData,ws.role);
+    }
+
+    private void highlight(String... params) throws Exception {
+        assumeInGame();
+        assumeParams(1, params);
+        assumePosition(params[0]);
+
+        var pos = convertToPosition(params[0]);
+        var possibleMoves = ws.currentGameData.game().validMoves(pos);
+        ArrayList<ChessPosition> positionsToHighlight = new ArrayList<>();
+        for(var move : possibleMoves){
+            positionsToHighlight.add(move.getEndPosition());
+        }
+
+        boardUI.draw(ws.currentGameData,ws.role,positionsToHighlight);
+
+    }
+
+    private ChessPosition convertToPosition(String param){
+        return new ChessPosition(Character.getNumericValue(param.charAt(1)),
+                ChessBoardUI.COL_LETTER_TO_INT.get(param.charAt(0)));
     }
 
 }

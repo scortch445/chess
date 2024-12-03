@@ -69,6 +69,7 @@ public class Client {
                     case "quit" -> quit();
                     case "leave" -> leave();
                     case "move" -> makeMove(params);
+                    case "resign" -> resign();
                     default -> throw new InvalidCommandException();
                 }
             } catch (Exception ex){
@@ -97,7 +98,8 @@ public class Client {
             case State.INGAME -> commands = Map.of(
                     "help","list possible commands",
                     "leave","the game (and vacate your spot)",
-                    "move <STARTING_POS> <END_POS> {PROMOTION_PIECE}","enter positions as A1"
+                    "move <STARTING_POS> <END_POS> {PROMOTION_PIECE}","enter positions as A1",
+                    "resign","if you are a player"
             );
         }
         for(var key : commands.keySet()){
@@ -276,9 +278,10 @@ public class Client {
             for (var game : games){
                 i++;
                 gameIDs[i-1] = game.gameID();
+                var color = (game.game().gameOver) ? SET_TEXT_COLOR_RED : SET_TEXT_COLOR_MAGENTA;
                 String whiteUser = (game.whiteUsername()==null) ? "\t\t" : game.whiteUsername();
                 String blackUser = (game.blackUsername()==null) ? "\t\t" : game.blackUsername();
-                System.out.println(SET_TEXT_COLOR_WHITE+i+". "+SET_TEXT_COLOR_MAGENTA+
+                System.out.println(SET_TEXT_COLOR_WHITE+i+". "+color+
                         game.gameName()+"\t\t\t"+
                         whiteUser+"\t\t\t"+
                         blackUser);
@@ -368,6 +371,19 @@ public class Client {
         ChessMove move = new ChessMove(start,end,promoPiece);
         var command = new MakeMoveCommand(authData.authToken(), currentGameID,move);
         ws.sendCommand(command);
+    }
+
+    private void resign() throws Exception {
+        assumeInGame();
+        System.out.print(SET_TEXT_COLOR_WHITE+"\nAre you sure? (Y/N) " +
+                SET_TEXT_COLOR_LIGHT_GREY + ">>> ");
+        String input = scanner.nextLine();
+        var tokens = input.toLowerCase().split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0] : "help";
+        if(Objects.equals(cmd, "y")){
+            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authData.authToken(), currentGameID);
+            ws.sendCommand(command);
+        }
     }
 
 }
